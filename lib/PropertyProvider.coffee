@@ -39,6 +39,9 @@ class PropertyProvider extends AbstractProvider
 
         @jumpWord = term
 
+        if member.declaringStructure.filename == editor.getPath()
+            @jumpTo(editor, term, false)
+
         atom.workspace.open(member.declaringStructure.filename, {
             searchAllPanes: true
         })

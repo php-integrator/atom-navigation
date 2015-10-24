@@ -185,12 +185,14 @@ class AbstractProvider
     ###*
      * Jumps to a word within the editor.
      *
-     * @param {TextEditor} editor The editor that has the function in.
-     * @param {string}     word   The word to find and then jump to.
+     * @param {TextEditor} editor    The editor that has the function in.
+     * @param {string}     word      The word to find and then jump to.
+     * @param {boolean}    doTimeout Whether to wait a small amount of time before jumping, to give the editor time to
+     *                               respond properly.
      *
      * @return {boolean} Whether the finding was successful.
     ###
-    jumpTo: (editor, word) ->
+    jumpTo: (editor, word, doTimeout = true) ->
         bufferPosition = Utility.findBufferPositionOfWord(editor, word, @getJumpToRegex(word))
 
         if bufferPosition == null
@@ -206,4 +208,4 @@ class AbstractProvider
             editor.scrollToScreenPosition(editor.screenPositionForBufferPosition(bufferPosition), {
                 center: true
             })
-        , 100)
+        , if doTimeout then 100 else 0)
