@@ -90,23 +90,14 @@ class ClassProvider extends AbstractProvider
         # See what matches we have for this class name.
         matches = fuzzaldrin.filter(classesResponse.autocomplete, term)
 
-        if matches[0] == term
-            regexMatches = /(?:\\)(\w+)$/i.exec(matches[0])
+        return unless matches[0] == term
 
-            if regexMatches == null || regexMatches.length == 0
-                @jumpWord = matches[0]
+        classInfo = @service.getClassInfo(matches[0])
 
-            else
-                @jumpWord = regexMatches[1]
-
-            classInfo = @service.getClassInfo(matches[0])
-
-            # TODO: We can just use getStartLine (declaringStructure) from ReflectonClass here, there shouldn't be any
-            # need to use the manual jumping here.
-
-            atom.workspace.open(classInfo.filename, {
-                searchAllPanes: true
-            })
+        atom.workspace.open(classInfo.filename, {
+            initialLine    : (classInfo.startLine - 1),
+            searchAllPanes : true
+        })
 
     ###*
      * @inheritdoc
