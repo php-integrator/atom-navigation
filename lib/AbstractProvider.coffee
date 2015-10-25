@@ -96,8 +96,7 @@ class AbstractProvider
 
                 return unless selector
 
-                $(selector).css('border-bottom', '1px solid ' + $(selector).css('color'))
-                $(selector).css('cursor', 'pointer')
+                $(selector).addClass('php-integrator-navigation-navigation-possible')
 
                 @isHovering = true
 
@@ -108,8 +107,7 @@ class AbstractProvider
 
                 return unless selector
 
-                $(selector).css('border-bottom', '')
-                $(selector).css('cursor', '')
+                $(selector).removeClass('php-integrator-navigation-navigation-possible')
 
                 @isHovering = false
 
