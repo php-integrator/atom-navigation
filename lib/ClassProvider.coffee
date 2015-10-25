@@ -133,7 +133,7 @@ class ClassProvider extends AbstractProvider
     ###
     removeMarkers: () ->
         for key,markers of @markers
-            @removeAnnotationsByKey(key)
+            @removeMarkersByKey(key)
 
     ###*
      * Rescans the editor, updating all annotations.
