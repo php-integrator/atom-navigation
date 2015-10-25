@@ -89,7 +89,7 @@ class AbstractProvider
             textEditorElement = atom.views.getView(editor)
             scrollViewElement = $(textEditorElement.shadowRoot).find('.scroll-view')
 
-            @subAtom.add scrollViewElement, 'mousemove', @hoverEventSelectors, (event) =>
+            @subAtom.add scrollViewElement, 'mouseover', @hoverEventSelectors, (event) =>
                 return unless event.altKey
 
                 selector = @getSelectorFromEvent(event)
