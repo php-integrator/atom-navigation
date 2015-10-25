@@ -19,17 +19,6 @@ class MethodProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    gotoRegex: /^(\$\w+)?((->|::)\w+\()+/
-
-    ###*
-     * @inheritdoc
-    ###
-    getJumpToRegex: (term) ->
-        return ///function\ +#{term}(\ +|\()///i
-
-    ###*
-     * @inheritdoc
-    ###
     gotoFromWord: (editor, term) ->
         bufferPosition = editor.getCursorBufferPosition()
 

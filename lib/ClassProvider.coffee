@@ -20,20 +20,9 @@ class ClassProvider extends AbstractProvider
     clickEventSelectors: '.entity.inherited-class, .support.namespace, .support.class'
 
     ###*
-     * @inheritdoc
-    ###
-    gotoRegex: /^\\?[A-Z][A-za-z0-9_]*(\\[A-Z][A-Za-z0-9_])*$/
-
-    ###*
      * A list of all markers that have been placed inside comments to allow code navigation there as well.
     ###
     markers: []
-
-    ###*
-     * @inheritdoc
-    ###
-    getJumpToRegex: (term) ->
-        return ///^(class|interface|abstract class|trait)\ +#{term}///i
 
     ###*
      * @inheritdoc

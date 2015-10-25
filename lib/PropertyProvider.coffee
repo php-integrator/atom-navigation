@@ -19,11 +19,6 @@ class PropertyProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    gotoRegex: /^(\$\w+)?((->|::)\w+)+/
-
-    ###*
-     * @inheritdoc
-    ###
     getJumpToRegex: (term) ->
         return ///(protected|public|private|static)\ +\$#{term}///i
 

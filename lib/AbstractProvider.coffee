@@ -22,15 +22,10 @@ class AbstractProvider
     clickEventSelectors: ''
 
     ###*
-     * The regular expressions that must be matched for go to to kick in.
-    ###
-    gotoRegex: ''
-
-    ###*
      * The word to jump to after a new editor has been opened. Used mostly to jump to code such as property names, where
      * their location can't be fetched via PHP reflection.
     ###
-    jumpWord: ''
+    jumpWord: null
 
     ###*
      * The service (that can be used to query the source code and contains utility methods).
@@ -46,9 +41,9 @@ class AbstractProvider
         @subAtom = new SubAtom
 
         atom.workspace.onDidChangeActivePaneItem (paneItem) =>
-            if paneItem instanceof TextEditor && @jumpWord != '' && @jumpWord != undefined
+            if paneItem instanceof TextEditor and @jumpWord
                 @jumpTo(paneItem, @jumpWord)
-                @jumpWord = ''
+                @jumpWord = null
 
         atom.workspace.observeTextEditors (editor) =>
             @registerEvents editor
@@ -161,16 +156,6 @@ class AbstractProvider
     ###
     getSelectorFromEvent: (event) ->
         return event.currentTarget
-
-    ###*
-     * Returns whether this goto is able to jump using the term.
-     *
-     * @param {string} term
-     *
-     * @return {boolean} Whether a jump is possible.
-    ###
-    canGoto: (term) ->
-        return term.match(@gotoRegex)?.length > 0
 
     ###*
      * Gets the regex used when looking for a word within the editor.
