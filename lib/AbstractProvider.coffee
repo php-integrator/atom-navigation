@@ -98,24 +98,19 @@ class AbstractProvider
 
                 $(selector).addClass('php-integrator-navigation-navigation-possible')
 
-                @isHovering = true
-
             @subAtom.add scrollViewElement, 'mouseout', @hoverEventSelectors, (event) =>
-                return unless @isHovering
-
                 selector = @getSelectorFromEvent(event)
 
                 return unless selector
 
                 $(selector).removeClass('php-integrator-navigation-navigation-possible')
 
-                @isHovering = false
-
             @subAtom.add scrollViewElement, 'click', @clickEventSelectors, (event) =>
+                return unless event.altKey
+
                 selector = @getSelectorFromEvent(event)
 
-                if selector == null || event.altKey == false
-                    return
+                return unless selector
 
                 if event.handled != true
                     @gotoFromWord(editor, $(selector).text())
