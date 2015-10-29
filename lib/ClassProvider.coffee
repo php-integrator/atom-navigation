@@ -72,19 +72,20 @@ class ClassProvider extends AbstractProvider
 
         term = @service.determineFullClassName(editor, term)
 
-        classesResponse = @service.getClassList()
+        classes = @service.getClassList()
 
-        return unless classesResponse
+        return unless classes
 
         # See what matches we have for this class name.
-        matches = fuzzaldrin.filter(classesResponse.autocomplete, term)
+        flatList = (obj for name,obj of classes)
 
-        return unless matches[0] == term
+        matches = fuzzaldrin.filter(flatList, term, key: 'name')
 
-        classInfo = @service.getClassInfo(matches[0])
+        if not matches or matches[0]?.name != term
+            return
 
-        atom.workspace.open(classInfo.filename, {
-            initialLine    : (classInfo.startLine - 1),
+        atom.workspace.open(matches[0].filename, {
+            initialLine    : (matches[0].startLine - 1),
             searchAllPanes : true
         })
 
