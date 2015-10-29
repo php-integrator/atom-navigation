@@ -17,18 +17,20 @@ class ClassProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    clickEventSelectors: '.entity.inherited-class, .support.namespace, .support.class'
+    clickEventSelectors: '.entity.inherited-class, .support.namespace, .support.class, .comment-clickable .region'
 
     ###*
      * A list of all markers that have been placed inside comments to allow code navigation there as well.
     ###
-    markers: []
+    markers: null
 
     ###*
      * @inheritdoc
     ###
     activate: (@service) ->
         super(@service)
+
+        @markers = {}
 
         atom.workspace.observeTextEditors (editor) =>
             editor.onDidSave (event) =>
@@ -50,7 +52,9 @@ class ClassProvider extends AbstractProvider
         if editor.getGrammar().scopeName.match /text.html.php$/
             # This is needed to be able to alt-click class names inside comments (docblocks).
             editor.onDidChangeCursorPosition (event) =>
-                return unless @isHovering
+                longTitle = editor.getLongTitle()
+
+                return if longTitle not of @markers
 
                 markerProperties =
                     containsBufferPosition: event.newBufferPosition
@@ -58,7 +62,7 @@ class ClassProvider extends AbstractProvider
                 markers = event.cursor.editor.findMarkers markerProperties
 
                 for key,marker of markers
-                    for allKey,allMarker of @markers[editor.getLongTitle()]
+                    for allMarker in @markers[longTitle]
                         if marker.id == allMarker.id
                             @gotoFromWord(event.cursor.editor, marker.getProperties().term)
                             break
@@ -108,7 +112,7 @@ class ClassProvider extends AbstractProvider
             regex = /@param|@var|@return|@throws|@see/g
 
             if regex.test(row)
-                @addMarkerToCommentLine row.split(' '), parseInt(key), editor, true
+                @addMarkerToCommentLine(row.split(' '), parseInt(key), editor, true)
 
     ###*
      * Removes any annotations that were created for the specified editor.
@@ -135,6 +139,8 @@ class ClassProvider extends AbstractProvider
     removeMarkers: () ->
         for key,markers of @markers
             @removeMarkersByKey(key)
+
+        @markers = {}
 
     ###*
      * Rescans the editor, updating all annotations.
@@ -165,7 +171,10 @@ class ClassProvider extends AbstractProvider
                     @addMarkerToCommentLine value.split('|'), rowIndex, editor, false, currentIndex, parseInt(key)
 
                 else
-                    range = [[rowIndex, currentIndex + parseInt(key) + offset], [rowIndex, currentIndex + parseInt(key) + value.length + offset]];
+                    range = [
+                        [rowIndex, currentIndex + parseInt(key) + offset],
+                        [rowIndex, currentIndex + parseInt(key) + value.length + offset]
+                    ]
 
                     marker = editor.markBufferRange(range)
 
@@ -180,10 +189,12 @@ class ClassProvider extends AbstractProvider
 
                     editor.decorateMarker marker, options
 
-                    if @markers[editor.getLongTitle()] == undefined
-                        @markers[editor.getLongTitle()] = []
+                    longTitle = editor.getLongTitle()
 
-                    @markers[editor.getLongTitle()].push(marker)
+                    if longTitle not of @markers
+                        @markers[longTitle] = []
+
+                    @markers[longTitle].push(marker)
 
                 if shouldBreak == true
                     break
