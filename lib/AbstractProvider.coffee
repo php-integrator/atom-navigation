@@ -117,21 +117,6 @@ class AbstractProvider
                     event.handled = true
 
     ###*
-     * Goto from the current cursor position in the editor.
-     *
-     * @param {TextEditor} editor TextEditor to pull term from.
-    ###
-    gotoFromEditor: (editor) ->
-        if editor.getGrammar().scopeName.match /text.html.php$/
-            position = editor.getCursorBufferPosition()
-            term = Utility.getFullWordFromBufferPosition(editor, position)
-
-            termParts = term.split(/(?:\-\>|::)/)
-            term = termParts.pop().replace('(', '')
-
-            @gotoFromWord(editor, term)
-
-    ###*
      * Goto from the term given.
      *
      * @param  {TextEditor} editor TextEditor to search for namespace of term.

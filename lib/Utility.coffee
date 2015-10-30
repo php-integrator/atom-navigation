@@ -1,47 +1,6 @@
 
 module.exports =
     ###*
-     * Gets the full words from the buffer position given.
-     * E.g. Getting a class with its namespace.
-     * @param  {TextEditor}     editor   TextEditor to search.
-     * @param  {BufferPosition} position BufferPosition to start searching from.
-     * @return {string}  Returns a string of the class.
-    ###
-    getFullWordFromBufferPosition: (editor, position) ->
-        foundStart = false
-        foundEnd = false
-        startBufferPosition = []
-        endBufferPosition = []
-        forwardRegex = /-|(?:\()[\w\[\$\(\\]|\s|\)|;|'|,|"|\|/
-        backwardRegex = /\(|\s|\)|;|'|,|"|\|/
-        index = -1
-        previousText = ''
-
-        loop
-            index++
-            startBufferPosition = [position.row, position.column - index - 1]
-            range = [[position.row, position.column], [startBufferPosition[0], startBufferPosition[1]]]
-            currentText = editor.getTextInBufferRange(range)
-            if backwardRegex.test(editor.getTextInBufferRange(range)) || startBufferPosition[1] == -1 || currentText == previousText
-                foundStart = true
-            previousText = editor.getTextInBufferRange(range)
-            break if foundStart
-        index = -1
-        loop
-            index++
-            endBufferPosition = [position.row, position.column + index + 1]
-            range = [[position.row, position.column], [endBufferPosition[0], endBufferPosition[1]]]
-            currentText = editor.getTextInBufferRange(range)
-            if forwardRegex.test(currentText) || endBufferPosition[1] == 500 || currentText == previousText
-                foundEnd = true
-            previousText = editor.getTextInBufferRange(range)
-            break if foundEnd
-
-        startBufferPosition[1] += 1
-        endBufferPosition[1] -= 1
-        return editor.getTextInBufferRange([startBufferPosition, endBufferPosition])
-
-    ###*
      * Finds the buffer position of the word given
      * @param  {TextEditor} editor TextEditor to search
      * @param  {string}     term   The function name to search for
