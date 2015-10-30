@@ -53,24 +53,37 @@ class ClassProvider extends AbstractProvider
         super(editor)
 
         if editor.getGrammar().scopeName.match /text.html.php$/
+            textEditorElement = atom.views.getView(editor)
+            scrollViewElement = $(textEditorElement.shadowRoot).find('.scroll-view')
+
             # This is needed to be able to alt-click class names inside comments (docblocks).
-            editor.onDidChangeCursorPosition (event) =>
-                return if not event.altKey
+            @subAtom.add scrollViewElement, 'click', @clickEventSelectors, (event) =>
+                return unless event.altKey
 
-                longTitle = editor.getLongTitle()
+                selector = event.currentTarget
 
-                return if longTitle not of @markers
+                return unless selector
 
-                markerProperties =
-                    containsBufferPosition: event.newBufferPosition
+                return unless not event.handled
 
-                markers = event.cursor.editor.findMarkers markerProperties
+                # The other case will be handled by the existing handler.
+                if selector.className.indexOf('region') >= 0
+                    longTitle = editor.getLongTitle()
 
-                for key,marker of markers
-                    for allMarker in @markers[longTitle]
-                        if marker.id == allMarker.id
-                            @gotoFromWord(event.cursor.editor, marker.getProperties().term)
-                            break
+                    return if longTitle not of @markers
+
+                    markerProperties =
+                        containsBufferPosition: editor.cursors[0].getBufferPosition()
+
+                    markers = editor.findMarkers markerProperties
+
+                    for key,marker of markers
+                        for allMarker in @markers[longTitle]
+                            if marker.id == allMarker.id
+                                @gotoFromWord(editor, marker.getProperties().term)
+                                break
+
+                    event.handled = true
 
     ###*
      * @inheritdoc
@@ -101,7 +114,18 @@ class ClassProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    getSelectorFromEvent: (event) ->
+    getHoverSelectorFromEvent: (event) ->
+        return @service.getClassSelectorFromEvent(event)
+
+    ###*
+     * @inheritdoc
+    ###
+    getClickSelectorFromEvent: (event) ->
+        if event.currentTarget.className.indexOf('region') >= 0
+            # Class name inside a comment, we can't fetch the text of these elements (it will be empty), this is handled
+            # by our override of registerEvents instead.
+            return null
+
         return @service.getClassSelectorFromEvent(event)
 
     ###*

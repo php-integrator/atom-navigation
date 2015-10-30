@@ -92,14 +92,14 @@ class AbstractProvider
             @subAtom.add scrollViewElement, 'mousemove', @hoverEventSelectors, (event) =>
                 return unless event.altKey
 
-                selector = @getSelectorFromEvent(event)
+                selector = @getHoverSelectorFromEvent(event)
 
                 return unless selector
 
                 $(selector).addClass('php-integrator-navigation-navigation-possible')
 
             @subAtom.add scrollViewElement, 'mouseout', @hoverEventSelectors, (event) =>
-                selector = @getSelectorFromEvent(event)
+                selector = @getHoverSelectorFromEvent(event)
 
                 return unless selector
 
@@ -108,13 +108,14 @@ class AbstractProvider
             @subAtom.add scrollViewElement, 'click', @clickEventSelectors, (event) =>
                 return unless event.altKey
 
-                selector = @getSelectorFromEvent(event)
+                selector = @getClickSelectorFromEvent(event)
 
                 return unless selector
 
-                if event.handled != true
-                    @gotoFromWord(editor, $(selector).text())
-                    event.handled = true
+                return unless not event.handled
+
+                @gotoFromWord(editor, $(selector).text())
+                event.handled = true
 
     ###*
      * Goto from the term given.
@@ -126,13 +127,23 @@ class AbstractProvider
         throw new Error("This method is abstract and must be implemented!")
 
     ###*
+     * Gets the correct selector when a selector is hovered over.
+     *
+     * @param {jQuery.Event} event A jQuery event.
+     *
+     * @return {Object|null} A selector to be used with jQuery.
+    ###
+    getHoverSelectorFromEvent: (event) ->
+        return event.currentTarget
+
+    ###*
      * Gets the correct selector when a selector is clicked.
      *
      * @param {jQuery.Event} event A jQuery event.
      *
      * @return {Object|null} A selector to be used with jQuery.
     ###
-    getSelectorFromEvent: (event) ->
+    getClickSelectorFromEvent: (event) ->
         return event.currentTarget
 
     ###*
