@@ -46,6 +46,9 @@ class ClassProvider extends AbstractProvider
 
         @removeMarkers()
 
+    ###*
+     * @inheritdoc
+    ###
     registerEvents: (editor) ->
         super(editor)
 
