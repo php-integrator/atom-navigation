@@ -52,6 +52,8 @@ class ClassProvider extends AbstractProvider
         if editor.getGrammar().scopeName.match /text.html.php$/
             # This is needed to be able to alt-click class names inside comments (docblocks).
             editor.onDidChangeCursorPosition (event) =>
+                return if not event.altKey
+
                 longTitle = editor.getLongTitle()
 
                 return if longTitle not of @markers
