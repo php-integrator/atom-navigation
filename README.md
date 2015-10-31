@@ -1,6 +1,8 @@
 # php-integrator-navigation
 
-This package provides code navigation for your PHP source code using [PHP Integrator](https://github.com/Gert-dev/php-integrator-base). Note that the [php-integrator-base](https://github.com/Gert-dev/php-integrator-base) package is required and needs to be set up correctly for this package to function correctly.
+This package provides code navigation for your PHP source code using [PHP Integrator](https://github.com/Gert-dev/php-integrator-base).
+
+**Note that the [php-integrator-base](https://github.com/Gert-dev/php-integrator-base) package is required and needs to be set up correctly for this package to function correctly.**
 
 What is included?
   * Navigation to the definitions of classes, traits and interfaces by alt-clicking them.
