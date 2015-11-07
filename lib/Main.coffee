@@ -1,8 +1,9 @@
 {Disposable} = require 'atom'
 
-MethodProvider = require './MethodProvider'
-ClassProvider   = require './ClassProvider'
+ClassProvider    = require './ClassProvider'
+MethodProvider   = require './MethodProvider'
 PropertyProvider = require './PropertyProvider'
+FunctionProvider = require './FunctionProvider'
 
 module.exports =
     ###*
@@ -29,6 +30,7 @@ module.exports =
         @providers.push new ClassProvider()
         @providers.push new MethodProvider()
         @providers.push new PropertyProvider()
+        @providers.push new FunctionProvider()
 
         for provider in @providers
             provider.activate(service)

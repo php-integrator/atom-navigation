@@ -5,8 +5,9 @@ This package provides code navigation for your PHP source code using [PHP Integr
 **Note that the [php-integrator-base](https://github.com/Gert-dev/php-integrator-base) package is required and needs to be set up correctly for this package to function correctly.**
 
 What is included?
-  * Navigation to the definitions of classes, traits and interfaces by alt-clicking them.
-  * Navigation to the definition of class, trait and interface members by alt-clicking them.
+  * Navigate to the definition of youw global PHP functions.
+  * Navigate to the definition of classes, traits and interfaces by alt-clicking them.
+  * Navigate to the definition of class, trait and interface members by alt-clicking them.
 
 Tip: You can also alt-click the names of classes, interfaces and traits inside docblocks! If an item is *navigable*, it will be underlined when moving your mouse over it while holding the alt modifier key.
 
