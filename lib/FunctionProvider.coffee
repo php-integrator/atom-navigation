@@ -20,8 +20,6 @@ class FunctionProvider extends AbstractProvider
      * @inheritdoc
     ###
     gotoFromWord: (editor, term) ->
-        bufferPosition = editor.getCursorBufferPosition()
-
         functions = @service.getGlobalFunctions()
 
         return unless functions and term of functions
