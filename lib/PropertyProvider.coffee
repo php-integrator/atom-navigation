@@ -20,7 +20,7 @@ class PropertyProvider extends AbstractProvider
      * @inheritdoc
     ###
     getJumpToRegex: (term) ->
-        return ///(protected|public|private|static)\ +\$#{term}///i
+        return ///(?:protected|public|private|static)\s+\$#{term}///
 
     ###*
      * @inheritdoc
