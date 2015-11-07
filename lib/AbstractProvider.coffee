@@ -3,8 +3,6 @@
 $ = require 'jquery'
 SubAtom = require 'sub-atom'
 
-Utility = require './Utility'
-
 module.exports =
 
 ##*
@@ -164,13 +162,18 @@ class AbstractProvider
      * @param {boolean}    doTimeout Whether to wait a small amount of time before jumping, to give the editor time to
      *                               respond properly.
      *
-     * @return {boolean} Whether the finding was successful.
+     * @return {boolean} Whether the jumping was successful (i.e. the item was found and the jump occurred).
     ###
     jumpTo: (editor, word, doTimeout = true) ->
-        bufferPosition = Utility.findBufferPositionOfWord(editor, word, @getJumpToRegex(word))
+        regex = @getJumpToRegex(word)
 
-        if bufferPosition == null
-            return false
+        bufferPosition = null
+
+        editor.getBuffer().scan regex, (matchInfo) =>
+            bufferPosition = matchInfo.range.start
+            matchInfo.stop()
+
+        return false unless bufferPosition
 
         # Small delay to wait for when a editor is being created.
         setTimeout(() ->
@@ -183,3 +186,5 @@ class AbstractProvider
                 center: true
             })
         , if doTimeout then 100 else 0)
+
+        return true
