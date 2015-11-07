@@ -1,4 +1,5 @@
 ## 0.2.0
+* Added navigation to the defnitiion of class constants.
 * Added navigation to the definition of (user-defined) global functions.
 
 ## 0.1.0

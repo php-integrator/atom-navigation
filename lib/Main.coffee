@@ -4,6 +4,7 @@ ClassProvider    = require './ClassProvider'
 MethodProvider   = require './MethodProvider'
 PropertyProvider = require './PropertyProvider'
 FunctionProvider = require './FunctionProvider'
+ConstantProvider = require './ConstantProvider'
 
 module.exports =
     ###*
@@ -31,6 +32,7 @@ module.exports =
         @providers.push new MethodProvider()
         @providers.push new PropertyProvider()
         @providers.push new FunctionProvider()
+        @providers.push new ConstantProvider()
 
         for provider in @providers
             provider.activate(service)
