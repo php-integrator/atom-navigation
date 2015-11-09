@@ -22,7 +22,11 @@ class MethodProvider extends AbstractProvider
     gotoFromWord: (editor, term) ->
         bufferPosition = editor.getCursorBufferPosition()
 
-        member = @service.getClassMemberAt(editor, bufferPosition, term)
+        try
+            member = @service.getClassMemberAt(editor, bufferPosition, term)
+
+        catch error
+            return
 
         return unless member
 
