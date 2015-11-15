@@ -36,11 +36,19 @@ class PropertyProvider extends AbstractProvider
 
         return unless member
 
-        @jumpWord = term
+        # We usually can't fetch information about where a property is located, but 
+        if member.declaringStructure.startLine
+            atom.workspace.open(member.declaringStructure.filename, {
+                initialLine    : (member.declaringStructure.startLine - 1),
+                searchAllPanes : true
+            })
 
-        if member.declaringStructure.filename == editor.getPath()
-            @jumpTo(editor, term, false)
+        else
+            @jumpWord = term
 
-        atom.workspace.open(member.declaringStructure.filename, {
-            searchAllPanes: true
-        })
+            if member.declaringStructure.filename == editor.getPath()
+                @jumpTo(editor, term, false)
+
+            atom.workspace.open(member.declaringStructure.filename, {
+                searchAllPanes: true
+            })
