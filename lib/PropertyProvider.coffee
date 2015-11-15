@@ -36,8 +36,7 @@ class PropertyProvider extends AbstractProvider
 
         return unless member
 
-        # We usually can't fetch information about where a property is located, but 
-        if member.declaringStructure.startLine
+        if member.isMagic
             atom.workspace.open(member.declaringStructure.filename, {
                 initialLine    : (member.declaringStructure.startLine - 1),
                 searchAllPanes : true
