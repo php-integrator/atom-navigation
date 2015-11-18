@@ -89,25 +89,16 @@ class ClassProvider extends AbstractProvider
      * @inheritdoc
     ###
     gotoFromWord: (editor, term) ->
-        if term == undefined || term.indexOf('$') == 0
+        className = @service.determineFullClassName(editor, term)
+
+        try
+            classInfo = @service.getClassInfo(className)
+
+        catch error
             return
 
-        term = @service.determineFullClassName(editor, term)
-
-        classes = @service.getClassList()
-
-        return unless classes
-
-        # See what matches we have for this class name.
-        flatList = (obj for name,obj of classes)
-
-        matches = fuzzaldrin.filter(flatList, term, key: 'name')
-
-        if not matches or matches[0]?.name != term
-            return
-
-        atom.workspace.open(matches[0].filename, {
-            initialLine    : (matches[0].startLine - 1),
+        atom.workspace.open(classInfo.filename, {
+            initialLine    : (classInfo.startLine - 1),
             searchAllPanes : true
         })
 

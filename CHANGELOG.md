@@ -1,3 +1,6 @@
+## 0.2.2
+* Simplified class navigation and fixed it not working in some rare cases.
+
 ## 0.2.1
 * Stop using maintainHistory to be compatible with upcoming Atom 1.3.
 
