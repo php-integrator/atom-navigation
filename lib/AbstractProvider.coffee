@@ -38,28 +38,31 @@ class AbstractProvider
     activate: (@service) ->
         @subAtom = new SubAtom
 
-        atom.workspace.onDidChangeActivePaneItem (paneItem) =>
-            if paneItem instanceof TextEditor and @jumpWord
-                @jumpTo(paneItem, @jumpWord)
-                @jumpWord = null
+        atom.packages.onDidActivatePackage (packageData) =>
+            return if packageData.name != 'language-php'
 
-        atom.workspace.observeTextEditors (editor) =>
-            @registerEvents editor
+            atom.workspace.onDidChangeActivePaneItem (paneItem) =>
+                if paneItem instanceof TextEditor and @jumpWord
+                    @jumpTo(paneItem, @jumpWord)
+                    @jumpWord = null
 
-        # When you go back to only have one pane the events are lost, so need to re-register.
-        atom.workspace.onDidDestroyPane (pane) =>
-            panes = atom.workspace.getPanes()
+            atom.workspace.observeTextEditors (editor) =>
+                @registerEvents editor
 
-            if panes.length == 1
-                @registerEventsForPane(panes[0])
+            # When you go back to only have one pane the events are lost, so need to re-register.
+            atom.workspace.onDidDestroyPane (pane) =>
+                panes = atom.workspace.getPanes()
 
-        # Having to re-register events as when a new pane is created the old panes lose the events.
-        atom.workspace.onDidAddPane (observedPane) =>
-            panes = atom.workspace.getPanes()
+                if panes.length == 1
+                    @registerEventsForPane(panes[0])
 
-            for pane in panes
-                if pane != observedPane
-                    @registerEventsForPane(pane)
+            # Having to re-register events as when a new pane is created the old panes lose the events.
+            atom.workspace.onDidAddPane (observedPane) =>
+                panes = atom.workspace.getPanes()
+
+                for pane in panes
+                    if pane != observedPane
+                        @registerEventsForPane(pane)
 
     ###*
      * Registers the necessary event handlers for the editors in the specified pane.
@@ -83,7 +86,7 @@ class AbstractProvider
      * @param {TextEditor} editor TextEditor to register events to.
     ###
     registerEvents: (editor) ->
-        if editor.getGrammar().scopeName.match /text.html.php$/
+        if /text.html.php$/.test(editor.getGrammar().scopeName)
             textEditorElement = atom.views.getView(editor)
             scrollViewElement = $(textEditorElement.shadowRoot).find('.scroll-view')
 

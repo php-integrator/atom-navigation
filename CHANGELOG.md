@@ -1,3 +1,6 @@
+## 0.2.3
+* Fixed markers not always registering on startup because the language-php package was not yet ready.
+
 ## 0.2.2
 * Simplified class navigation and fixed it not working in some rare cases.
 
