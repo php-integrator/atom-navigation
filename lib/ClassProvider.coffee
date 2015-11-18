@@ -52,7 +52,7 @@ class ClassProvider extends AbstractProvider
     registerEvents: (editor) ->
         super(editor)
 
-        if editor.getGrammar().scopeName.match /text.html.php$/
+        if /text.html.php$/.test(editor.getGrammar().scopeName)
             textEditorElement = atom.views.getView(editor)
             scrollViewElement = $(textEditorElement.shadowRoot).find('.scroll-view')
 
