@@ -36,33 +36,51 @@ class AbstractProvider
      * @param {mixed} service
     ###
     activate: (@service) ->
-        @subAtom = new SubAtom
+        dependentPackage = 'language-php'
+
+        # It could be that the dependent package is already active, in that case we can continue immediately. If not,
+        # we'll need to wait for the listener to be invoked
+        if atom.packages.isPackageActive(dependentPackage)
+            @doActualInitialization()
 
         atom.packages.onDidActivatePackage (packageData) =>
-            return if packageData.name != 'language-php'
+            return if packageData.name != dependentPackage
 
-            atom.workspace.onDidChangeActivePaneItem (paneItem) =>
-                if paneItem instanceof TextEditor and @jumpWord
-                    @jumpTo(paneItem, @jumpWord)
-                    @jumpWord = null
+            @doActualInitialization()
 
-            atom.workspace.observeTextEditors (editor) =>
-                @registerEvents editor
+        atom.packages.onDidDeactivatePackage (packageData) =>
+            return if packageData.name != dependentPackage
 
-            # When you go back to only have one pane the events are lost, so need to re-register.
-            atom.workspace.onDidDestroyPane (pane) =>
-                panes = atom.workspace.getPanes()
+            @deactivate()
 
-                if panes.length == 1
-                    @registerEventsForPane(panes[0])
+    ###*
+     * Does the actual initialization.
+    ###
+    doActualInitialization: () ->
+        @subAtom = new SubAtom
 
-            # Having to re-register events as when a new pane is created the old panes lose the events.
-            atom.workspace.onDidAddPane (observedPane) =>
-                panes = atom.workspace.getPanes()
+        atom.workspace.onDidChangeActivePaneItem (paneItem) =>
+            if paneItem instanceof TextEditor and @jumpWord
+                @jumpTo(paneItem, @jumpWord)
+                @jumpWord = null
 
-                for pane in panes
-                    if pane != observedPane
-                        @registerEventsForPane(pane)
+        atom.workspace.observeTextEditors (editor) =>
+            @registerEvents editor
+
+        # When you go back to only have one pane the events are lost, so need to re-register.
+        atom.workspace.onDidDestroyPane (pane) =>
+            panes = atom.workspace.getPanes()
+
+            if panes.length == 1
+                @registerEventsForPane(panes[0])
+
+        # Having to re-register events as when a new pane is created the old panes lose the events.
+        atom.workspace.onDidAddPane (observedPane) =>
+            panes = atom.workspace.getPanes()
+
+            for pane in panes
+                if pane != observedPane
+                    @registerEventsForPane(pane)
 
     ###*
      * Registers the necessary event handlers for the editors in the specified pane.
@@ -79,6 +97,7 @@ class AbstractProvider
     ###
     deactivate: () ->
         @subAtom.dispose()
+        @subAtom = null
 
     ###*
      * Registers the mouse events for alt-click.

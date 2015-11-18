@@ -27,8 +27,8 @@ class ClassProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    activate: (@service) ->
-        super(@service)
+    doActualInitialization: () ->
+        super()
 
         @markers = {}
 
