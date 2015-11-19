@@ -96,8 +96,9 @@ class AbstractProvider
      * Deactives the provider.
     ###
     deactivate: () ->
-        @subAtom.dispose()
-        @subAtom = null
+        if @subAtom
+            @subAtom.dispose()
+            @subAtom = null
 
     ###*
      * Registers the mouse events for alt-click.
