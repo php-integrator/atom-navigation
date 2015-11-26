@@ -24,7 +24,8 @@ class FunctionProvider extends AbstractProvider
 
         return unless functions and term of functions
 
-        atom.workspace.open(functions[term].filename, {
-            initialLine    : (functions[term].startLine - 1),
-            searchAllPanes : true
-        })
+        if functions[term].filename
+            atom.workspace.open(functions[term].filename, {
+                initialLine    : (functions[term].startLine - 1),
+                searchAllPanes : true
+            })

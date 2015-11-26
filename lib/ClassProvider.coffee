@@ -97,10 +97,11 @@ class ClassProvider extends AbstractProvider
         catch error
             return
 
-        atom.workspace.open(classInfo.filename, {
-            initialLine    : (classInfo.startLine - 1),
-            searchAllPanes : true
-        })
+        if classInfo.filename
+            atom.workspace.open(classInfo.filename, {
+                initialLine    : (classInfo.startLine - 1),
+                searchAllPanes : true
+            })
 
     ###*
      * @inheritdoc

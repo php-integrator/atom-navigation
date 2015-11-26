@@ -30,7 +30,8 @@ class MethodProvider extends AbstractProvider
 
         return unless member
 
-        atom.workspace.open(member.declaringStructure.filename, {
-            initialLine    : (member.startLine - 1),
-            searchAllPanes : true
-        })
+        if member.declaringStructure.filename
+            atom.workspace.open(member.declaringStructure.filename, {
+                initialLine    : (member.startLine - 1),
+                searchAllPanes : true
+            })

@@ -31,6 +31,7 @@ class ConstantProvider extends AbstractProvider
         member = @service.getClassMemberAt(editor, bufferPosition, term)
 
         return unless member
+        return unless member.declaringStructure.filename
 
         @jumpWord = term
 

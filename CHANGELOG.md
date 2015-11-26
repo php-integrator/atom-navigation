@@ -1,3 +1,6 @@
+## 0.2.4
+* Don't try to navigate to items that don't have a filename set. Fixes trying to alt-click internal classes such as 'DateTime' opening an empty file.
+
 ## 0.2.3
 * Fixed markers not always registering on startup because the language-php package was not yet ready.
 

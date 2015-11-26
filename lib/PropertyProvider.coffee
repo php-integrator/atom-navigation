@@ -36,6 +36,8 @@ class PropertyProvider extends AbstractProvider
 
         return unless member
 
+        return unless member.declaringStructure.filename
+
         if member.isMagic
             atom.workspace.open(member.declaringStructure.filename, {
                 initialLine    : (member.declaringStructure.startLine - 1),
