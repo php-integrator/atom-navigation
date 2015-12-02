@@ -19,12 +19,6 @@ class ConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    getJumpToRegex: (term) ->
-        return ///const\s+#{term}///
-
-    ###*
-     * @inheritdoc
-    ###
     gotoFromWord: (editor, term) ->
         bufferPosition = editor.getCursorBufferPosition()
 
@@ -33,11 +27,7 @@ class ConstantProvider extends AbstractProvider
         return unless member
         return unless member.declaringStructure.filename
 
-        @jumpWord = term
-
-        if member.declaringStructure.filename == editor.getPath()
-            @jumpTo(editor, term, false)
-
         atom.workspace.open(member.declaringStructure.filename, {
+            initialLine    : (member.declaringStructure.startLineMember - 1),
             searchAllPanes: true
         })

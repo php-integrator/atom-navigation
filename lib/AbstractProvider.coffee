@@ -20,12 +20,6 @@ class AbstractProvider
     clickEventSelectors: ''
 
     ###*
-     * The word to jump to after a new editor has been opened. Used mostly to jump to code such as property names, where
-     * their location can't be fetched via PHP reflection.
-    ###
-    jumpWord: null
-
-    ###*
      * The service (that can be used to query the source code and contains utility methods).
     ###
     service: null
@@ -58,11 +52,6 @@ class AbstractProvider
     ###
     doActualInitialization: () ->
         @subAtom = new SubAtom
-
-        atom.workspace.onDidChangeActivePaneItem (paneItem) =>
-            if paneItem instanceof TextEditor and @jumpWord
-                @jumpTo(paneItem, @jumpWord)
-                @jumpWord = null
 
         atom.workspace.observeTextEditors (editor) =>
             @registerEvents editor
@@ -166,48 +155,3 @@ class AbstractProvider
     ###
     getClickSelectorFromEvent: (event) ->
         return event.currentTarget
-
-    ###*
-     * Gets the regex used when looking for a word within the editor.
-     *
-     * @param {string} term Term being search.
-     *
-     * @return {regex} Regex to be used.
-    ###
-    getJumpToRegex: (term) ->
-        throw new Error("This method is abstract and must be implemented!")
-
-    ###*
-     * Jumps to a word within the editor.
-     *
-     * @param {TextEditor} editor    The editor that has the function in.
-     * @param {string}     word      The word to find and then jump to.
-     * @param {boolean}    doTimeout Whether to wait a small amount of time before jumping, to give the editor time to
-     *                               respond properly.
-     *
-     * @return {boolean} Whether the jumping was successful (i.e. the item was found and the jump occurred).
-    ###
-    jumpTo: (editor, word, doTimeout = true) ->
-        regex = @getJumpToRegex(word)
-
-        bufferPosition = null
-
-        editor.getBuffer().scan regex, (matchInfo) =>
-            bufferPosition = matchInfo.range.start
-            matchInfo.stop()
-
-        return false unless bufferPosition
-
-        # Small delay to wait for when a editor is being created.
-        setTimeout(() ->
-            editor.setCursorBufferPosition(bufferPosition, {
-                autoscroll: false
-            })
-
-            # Separated these as the autoscroll on setCursorBufferPosition didn't work as well.
-            editor.scrollToScreenPosition(editor.screenPositionForBufferPosition(bufferPosition), {
-                center: true
-            })
-        , if doTimeout then 100 else 0)
-
-        return true

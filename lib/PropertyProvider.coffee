@@ -19,12 +19,6 @@ class PropertyProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    getJumpToRegex: (term) ->
-        return ///(?:protected|public|private|static)\s+\$#{term}///
-
-    ###*
-     * @inheritdoc
-    ###
     gotoFromWord: (editor, term) ->
         bufferPosition = editor.getCursorBufferPosition()
 
@@ -38,18 +32,7 @@ class PropertyProvider extends AbstractProvider
 
         return unless member.declaringStructure.filename
 
-        if member.isMagic
-            atom.workspace.open(member.declaringStructure.filename, {
-                initialLine    : (member.declaringStructure.startLine - 1),
-                searchAllPanes : true
-            })
-
-        else
-            @jumpWord = term
-
-            if member.declaringStructure.filename == editor.getPath()
-                @jumpTo(editor, term, false)
-
-            atom.workspace.open(member.declaringStructure.filename, {
-                searchAllPanes: true
-            })
+        atom.workspace.open(member.declaringStructure.filename, {
+            initialLine    : (member.declaringStructure.startLineMember - 1),
+            searchAllPanes: true
+        })

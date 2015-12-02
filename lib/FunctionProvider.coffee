@@ -23,9 +23,9 @@ class FunctionProvider extends AbstractProvider
         functions = @service.getGlobalFunctions()
 
         return unless functions and term of functions
+        return unless functions[term].filename
 
-        if functions[term].filename
-            atom.workspace.open(functions[term].filename, {
-                initialLine    : (functions[term].startLine - 1),
-                searchAllPanes : true
-            })
+        atom.workspace.open(functions[term].filename, {
+            initialLine    : (functions[term].startLine - 1),
+            searchAllPanes : true
+        })
