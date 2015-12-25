@@ -23,7 +23,7 @@ class MethodProvider extends AbstractProvider
         bufferPosition = editor.getCursorBufferPosition()
 
         try
-            member = @service.getClassMemberAt(editor, bufferPosition, term)
+            member = @service.getClassMethodAt(editor, bufferPosition, term)
 
         catch error
             return
