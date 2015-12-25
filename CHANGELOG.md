@@ -1,4 +1,4 @@
-## 0.2.5
+## 0.2.5 (base 0.4.0)
 * Fixed navigation not working in corner cases where a property and method existed with the same name.
 
 ## 0.2.4
