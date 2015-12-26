@@ -5,7 +5,7 @@ This package provides code navigation for your PHP source code using [PHP Integr
 **Note that the [php-integrator-base](https://github.com/Gert-dev/php-integrator-base) package is required and needs to be set up correctly for this package to function correctly.**
 
 What is included?
-  * Navigate to the definition of your global PHP functions.
+  * Navigate to the definition of your global PHP constnats and functions.
   * Navigate to the definition of classes, traits and interfaces by alt-clicking them.
   * Navigate to the definition of class, trait and interface members by alt-clicking them.
 
