@@ -1,12 +1,3 @@
-{Disposable} = require 'atom'
-
-ClassProvider         = require './ClassProvider'
-MethodProvider        = require './MethodProvider'
-PropertyProvider      = require './PropertyProvider'
-FunctionProvider      = require './FunctionProvider'
-ConstantProvider      = require './ConstantProvider'
-ClassConstantProvider = require './ClassConstantProvider'
-
 module.exports =
     ###*
      * List of tooltip providers.
@@ -28,6 +19,13 @@ module.exports =
      * Activates the providers using the specified service.
     ###
     activateProviders: (service) ->
+        ClassProvider         = require './ClassProvider'
+        MethodProvider        = require './MethodProvider'
+        PropertyProvider      = require './PropertyProvider'
+        FunctionProvider      = require './FunctionProvider'
+        ConstantProvider      = require './ConstantProvider'
+        ClassConstantProvider = require './ClassConstantProvider'
+
         @providers = []
         @providers.push new ClassProvider()
         @providers.push new MethodProvider()
@@ -59,5 +57,7 @@ module.exports =
     ###
     setService: (service) ->
         @activateProviders(service)
+
+        {Disposable} = require 'atom'
 
         return new Disposable => @deactivateProviders()
