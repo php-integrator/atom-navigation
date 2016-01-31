@@ -17,21 +17,38 @@ class MethodProvider extends AbstractProvider
     clickEventSelectors: '.function-call.object, .function-call.static'
 
     ###*
-     * @inheritdoc
+     * Convenience method that returns information for the specified term.
+     *
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
+     * @param {string}     term
     ###
-    gotoFromWord: (editor, term) ->
-        bufferPosition = editor.getCursorBufferPosition()
-
+    getInfoFor: (editor, bufferPosition, term) ->
         try
             member = @service.getClassMethodAt(editor, bufferPosition, term)
 
         catch error
-            return
+            return null
 
-        return unless member
-        return unless member.declaringStructure.filename
+        return null unless member
+        return null unless member.declaringStructure.filename
 
-        atom.workspace.open(member.declaringStructure.filename, {
-            initialLine    : (member.declaringStructure.startLineMember - 1),
-            searchAllPanes : true
-        })
+        return member
+
+    ###*
+     * @inheritdoc
+    ###
+    isValid: (editor, bufferPosition, term) ->
+        return if @getInfoFor(editor, bufferPosition, term)? then true else false
+
+    ###*
+     * @inheritdoc
+    ###
+    gotoFromWord: (editor, bufferPosition, term) ->
+        info = @getInfoFor(editor, bufferPosition, term)
+
+        if info?
+            atom.workspace.open(info.declaringStructure.filename, {
+                initialLine    : (info.declaringStructure.startLineMember - 1),
+                searchAllPanes : true
+            })

@@ -85,21 +85,47 @@ class ClassProvider extends AbstractProvider
 
                     event.handled = true
 
+
+
+
+
+
     ###*
-     * @inheritdoc
+     * Convenience method that returns information for the specified term.
+     *
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
+     * @param {string}     term
     ###
-    gotoFromWord: (editor, term) ->
+    getInfoFor: (editor, bufferPosition, term) ->
         className = @service.determineFullClassName(editor, term)
 
         try
             classInfo = @service.getClassInfo(className)
 
         catch error
-            return
+            return null
 
         if classInfo.filename
-            atom.workspace.open(classInfo.filename, {
-                initialLine    : (classInfo.startLine - 1),
+            return classInfo
+
+        return null
+
+    ###*
+     * @inheritdoc
+    ###
+    isValid: (editor, bufferPosition, term) ->
+        return if @getInfoFor(editor, bufferPosition, term)? then true else false
+
+    ###*
+     * @inheritdoc
+    ###
+    gotoFromWord: (editor, term) ->
+        info = @getInfoFor(editor, term)
+
+        if info?
+            atom.workspace.open(info.filename, {
+                initialLine    : (info.startLine - 1),
                 searchAllPanes : true
             })
 

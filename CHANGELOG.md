@@ -1,3 +1,6 @@
+## 0.4.0 (base 0.5.0)
+* Show a dashed line if an item is recognized, but navigation is not possible (i.e. because the item wasn't found).
+
 ## 0.3.0 (base 0.4.0)
 * Added navigation to the definition of global constants.
 * Fixed navigation not working in corner cases where a property and method existed with the same name.

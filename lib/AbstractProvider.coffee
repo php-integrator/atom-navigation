@@ -104,7 +104,13 @@ class AbstractProvider
 
                 return unless selector
 
-                $(selector).addClass('php-integrator-navigation-navigation-possible')
+                bufferPosition = atom.views.getView(editor).component.screenPositionForMouseEvent(event)
+
+                if @isValid(editor, bufferPosition, $(selector).text())
+                    $(selector).addClass('php-integrator-navigation-navigation-possible')
+
+                else
+                    $(selector).addClass('php-integrator-navigation-navigation-impossible')
 
             @subAtom.add scrollViewElement, 'mouseout', @hoverEventSelectors, (event) =>
                 selector = @getHoverSelectorFromEvent(event)
@@ -112,6 +118,7 @@ class AbstractProvider
                 return unless selector
 
                 $(selector).removeClass('php-integrator-navigation-navigation-possible')
+                $(selector).removeClass('php-integrator-navigation-navigation-impossible')
 
             @subAtom.add scrollViewElement, 'click', @clickEventSelectors, (event) =>
                 return unless event.altKey
@@ -122,16 +129,32 @@ class AbstractProvider
 
                 return unless not event.handled
 
-                @gotoFromWord(editor, $(selector).text())
+                bufferPosition = atom.views.getView(editor).component.screenPositionForMouseEvent(event)
+
+                @gotoFromWord(editor, bufferPosition, $(selector).text())
                 event.handled = true
+
+
+    ###*
+     * Indicates if the specified term is valid for navigating to.
+     *
+     * @param  {TextEditor} editor TextEditor to search for namespace of term.
+     * @param {Point}       bufferPosition
+     * @param  {string}     term   Term to search for.
+     *
+     * @return {boolean}
+    ###
+    isValid: (editor, bufferPosition, term) ->
+        throw new Error("This method is abstract and must be implemented!")
 
     ###*
      * Goto from the term given.
      *
      * @param  {TextEditor} editor TextEditor to search for namespace of term.
+     * @param {Point}       bufferPosition
      * @param  {string}     term   Term to search for.
     ###
-    gotoFromWord: (editor, term) ->
+    gotoFromWord: (editor, bufferPosition, term) ->
         throw new Error("This method is abstract and must be implemented!")
 
     ###*

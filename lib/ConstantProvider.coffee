@@ -17,15 +17,34 @@ class ConstantProvider extends AbstractProvider
     clickEventSelectors: '.constant.other.php'
 
     ###*
-     * @inheritdoc
+     * Convenience method that returns information for the specified term.
+     *
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
+     * @param {string}     term
     ###
-    gotoFromWord: (editor, term) ->
+    getInfoFor: (editor, bufferPosition, term) ->
         constants = @service.getGlobalConstants()
 
-        return unless constants and term of constants
-        return unless constants[term].filename
+        return null unless constants and term of constants
+        return null unless constants[term].filename
 
-        atom.workspace.open(constants[term].filename, {
-            initialLine    : (constants[term].startLine - 1),
-            searchAllPanes : true
-        })
+        return constants[term]
+
+    ###*
+     * @inheritdoc
+    ###
+    isValid: (editor, bufferPosition, term) ->
+        return if @getInfoFor(editor, bufferPosition, term)? then true else false
+
+    ###*
+     * @inheritdoc
+    ###
+    gotoFromWord: (editor, bufferPosition, term) ->
+        info = @getInfoFor(editor, bufferPosition, term)
+
+        if info?
+            atom.workspace.open(info.filename, {
+                initialLine    : (info.startLine - 1),
+                searchAllPanes : true
+            })
