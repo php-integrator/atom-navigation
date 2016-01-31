@@ -23,6 +23,18 @@ class AbstractProvider
     service: null
 
     ###*
+     * Contains global package settings.
+    ###
+    config: null
+
+    ###*
+     * Constructor.
+     *
+     * @param {Config} config
+    ###
+    constructor: (@config) ->
+
+    ###*
      * Initializes this provider.
      *
      * @param {mixed} service
@@ -98,7 +110,7 @@ class AbstractProvider
             scrollViewElement = $(textEditorElement.shadowRoot).find('.scroll-view')
 
             @subAtom.add scrollViewElement, 'mousemove', @hoverEventSelectors, (event) =>
-                return unless event.altKey
+                return unless @areEventMouseModifiersValid(event)
 
                 selector = @getHoverSelectorFromEvent(event)
 
@@ -121,7 +133,7 @@ class AbstractProvider
                 $(selector).removeClass('php-integrator-navigation-navigation-impossible')
 
             @subAtom.add scrollViewElement, 'click', @clickEventSelectors, (event) =>
-                return unless event.altKey
+                return unless @areEventMouseModifiersValid(event)
 
                 selector = @getClickSelectorFromEvent(event)
 
@@ -134,13 +146,29 @@ class AbstractProvider
                 @gotoFromWord(editor, bufferPosition, $(selector).text())
                 event.handled = true
 
-
     ###*
-     * Indicates if the specified term is valid for navigating to.
+     * Indicates if the specified event has the correct mouse modifier kesy held down.
      *
      * @param  {TextEditor} editor TextEditor to search for namespace of term.
      * @param {Point}       bufferPosition
      * @param  {string}     term   Term to search for.
+     *
+     * @return {boolean}
+    ###
+    areEventMouseModifiersValid: (event) ->
+        return false if @config.get('navigationRequireAltKey') and not event.altKey
+        return false if @config.get('navigationRequireMetaKey') and not event.metaKey
+        return false if @config.get('navigationRequireCtrlKey') and not event.ctrlKey
+        return false if @config.get('navigationRequireShiftKey') and not event.shiftKey
+
+        return true
+
+    ###*
+     * Indicates if the specified term is valid for navigating to.
+     *
+     * @param {TextEditor} editor         TextEditor to search for namespace of term.
+     * @param {Point}      bufferPosition
+     * @param {string}     term           Term to search for.
      *
      * @return {boolean}
     ###
@@ -150,9 +178,9 @@ class AbstractProvider
     ###*
      * Goto from the term given.
      *
-     * @param  {TextEditor} editor TextEditor to search for namespace of term.
-     * @param {Point}       bufferPosition
-     * @param  {string}     term   Term to search for.
+     * @param {TextEditor} editor         TextEditor to search for namespace of term.
+     * @param {Point}      bufferPosition
+     * @param {string}     term           Term to search for.
     ###
     gotoFromWord: (editor, bufferPosition, term) ->
         throw new Error("This method is abstract and must be implemented!")
