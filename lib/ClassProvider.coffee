@@ -85,11 +85,6 @@ class ClassProvider extends AbstractProvider
 
                     event.handled = true
 
-
-
-
-
-
     ###*
      * Convenience method that returns information for the specified term.
      *
@@ -120,8 +115,8 @@ class ClassProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    gotoFromWord: (editor, term) ->
-        info = @getInfoFor(editor, term)
+    gotoFromWord: (editor, bufferPosition, term) ->
+        info = @getInfoFor(editor, bufferPosition, term)
 
         if info?
             atom.workspace.open(info.filename, {
