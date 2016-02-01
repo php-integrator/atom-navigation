@@ -28,6 +28,11 @@ class AbstractProvider
     config: null
 
     ###*
+     * The subatom that is used to register events for each editor.
+    ###
+    subAtom: null
+
+    ###*
      * Constructor.
      *
      * @param {Config} config
