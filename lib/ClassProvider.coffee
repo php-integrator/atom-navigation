@@ -93,7 +93,7 @@ class ClassProvider extends AbstractProvider
      * @param {string}     term
     ###
     getInfoFor: (editor, bufferPosition, term) ->
-        className = @service.determineFullClassName(editor, term)
+        className = @service.resolveType(editor, term)
 
         try
             classInfo = @service.getClassInfo(className)

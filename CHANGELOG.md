@@ -1,3 +1,6 @@
+## 0.4.1 (base 0.6.0)
+* Updated to work with the most recent service from the base package.
+
 ## 0.4.0 (base 0.5.0)
 * The modifier keys that are used in combination with a mouse click are now modifiable as settings.
 * Show a dashed line if an item is recognized, but navigation is not possible (i.e. because the item wasn't found).
