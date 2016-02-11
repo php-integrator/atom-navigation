@@ -12,12 +12,7 @@ class ClassProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    hoverEventSelectors: '.entity.inherited-class, .support.namespace, .support.class, .comment-clickable .region'
-
-    ###*
-     * @inheritdoc
-    ###
-    clickEventSelectors: '.entity.inherited-class, .support.namespace, .support.class, .comment-clickable .region'
+    eventSelectors: '.entity.inherited-class, .support.namespace, .support.class, .comment-clickable .region'
 
     ###*
      * A list of all markers that have been placed inside comments to allow code navigation there as well.

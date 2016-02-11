@@ -9,12 +9,7 @@ class MethodProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    hoverEventSelectors: '.function-call.object, .function-call.static'
-
-    ###*
-     * @inheritdoc
-    ###
-    clickEventSelectors: '.function-call.object, .function-call.static'
+    eventSelectors: '.function-call.object, .function-call.static'
 
     ###*
      * Convenience method that returns information for the specified term.

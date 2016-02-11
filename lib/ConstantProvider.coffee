@@ -9,12 +9,15 @@ class ConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    hoverEventSelectors: '.constant.other.php'
+    eventSelectors: '.constant.other.php'
 
     ###*
      * @inheritdoc
     ###
-    clickEventSelectors: '.constant.other.php'
+    isValidForNavigation: (editor, selector) ->
+        # The selector from this provider will still match class constants due to the way SubAtom does its class
+        # selector checks. Filter these out.
+        return if selector.className.indexOf('other class php') != -1 then false else true
 
     ###*
      * Convenience method that returns information for the specified term.

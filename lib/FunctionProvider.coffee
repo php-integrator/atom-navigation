@@ -9,12 +9,7 @@ class FunctionProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    hoverEventSelectors: '.function-call:not(.object):not(.static)'
-
-    ###*
-     * @inheritdoc
-    ###
-    clickEventSelectors: '.function-call:not(.object):not(.static)'
+    eventSelectors: '.function-call:not(.object):not(.static)'
 
     ###*
      * Convenience method that returns information for the specified term.

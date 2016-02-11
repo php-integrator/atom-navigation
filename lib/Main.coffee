@@ -75,10 +75,6 @@ module.exports =
         @providers.push new MethodProvider(@configuration)
         @providers.push new PropertyProvider(@configuration)
         @providers.push new FunctionProvider(@configuration)
-
-        # The selector from the constant provider will still match class constants due to the way SubAtom does its
-        # class selector checks. However, the reverse doesn't hold so if we add the class constant provider first,
-        # we will not run into problems.
         @providers.push new ClassConstantProvider(@configuration)
         @providers.push new ConstantProvider(@configuration)
 

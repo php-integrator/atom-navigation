@@ -9,12 +9,7 @@ class ClassConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    hoverEventSelectors: '.constant.other.class'
-
-    ###*
-     * @inheritdoc
-    ###
-    clickEventSelectors: '.constant.other.class'
+    eventSelectors: '.constant.other.class'
 
     ###*
      * Convenience method that returns information for the specified term.

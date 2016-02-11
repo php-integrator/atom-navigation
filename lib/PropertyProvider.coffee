@@ -9,12 +9,7 @@ class PropertyProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    hoverEventSelectors: '.property'
-
-    ###*
-     * @inheritdoc
-    ###
-    clickEventSelectors: '.property'
+    eventSelectors: '.property'
 
     ###*
      * Convenience method that returns information for the specified term.
