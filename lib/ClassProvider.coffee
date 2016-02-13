@@ -90,7 +90,7 @@ class ClassProvider extends AbstractProvider
     getInfoFor: (editor, bufferPosition, term) ->
         return null if not term
 
-        className = @service.resolveType(editor, term)
+        className = @service.resolveTypeAt(editor, bufferPosition, term)
 
         try
             classInfo = @service.getClassInfo(className)
