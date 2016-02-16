@@ -143,7 +143,7 @@ class AbstractProvider
 
         bufferPosition = atom.views.getView(editor).component.screenPositionForMouseEvent(event)
 
-        text = $(selector).text()
+        text = @getClickedTextByEvent(editor, event)
 
         if @isValid(editor, bufferPosition, text)
             $(selector).addClass('php-integrator-navigation-navigation-possible')
@@ -183,9 +183,26 @@ class AbstractProvider
 
         bufferPosition = atom.views.getView(editor).component.screenPositionForMouseEvent(event)
 
-        @gotoFromWord(editor, bufferPosition, $(selector).text())
+        text = @getClickedTextByEvent(editor, event)
+
+        @gotoFromWord(editor, bufferPosition, text)
 
         event.handled = true
+
+    ###*
+     * Retrieves the clicked text for an event.
+     *
+     * @param {TextEditor}   editor
+     * @param {jQuery.event} event
+     *
+     * @return {string|null}
+    ###
+    getClickedTextByEvent: (editor, event) ->
+        selector = @getClickSelectorFromEvent(event)
+
+        return null unless selector
+
+        return $(selector).text()
 
     ###*
      * Indicates if the specified event has the correct mouse modifier kesy held down.

@@ -62,18 +62,13 @@ class ClassProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    onMouseClick: (editor, event) ->
-        super(editor, event)
+    getClickedTextByEvent: (editor, event) ->
+        selector = event.currentTarget
 
-        if not event.handled
-            return # The parent did not handle the event, so we don't either.
+        return null unless selector
 
         # Class names inside comments require special treatment as their div doesn't actually contain any text, so we
         # use markers to fetch the text instead.
-        selector = event.currentTarget
-
-        return unless selector
-
         if selector.className.indexOf('region') != -1
             longTitle = editor.getLongTitle()
 
@@ -89,8 +84,9 @@ class ClassProvider extends AbstractProvider
             for key,marker of markers
                 for allMarker in @markers[longTitle]
                     if marker.id == allMarker.id
-                        @gotoFromWord(editor, bufferPosition, marker.getProperties().term)
-                        break
+                        return marker.getProperties().term
+
+        return super(editor, event)
 
     ###*
      * Convenience method that returns information for the specified term.
