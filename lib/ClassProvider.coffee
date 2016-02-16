@@ -90,8 +90,16 @@ class ClassProvider extends AbstractProvider
     getInfoFor: (editor, bufferPosition, term) ->
         return null if not term
 
+        scopeChain = editor.scopeDescriptorForBufferPosition(bufferPosition).getScopeChain()
+
         try
-            className = @service.resolveTypeAt(editor, bufferPosition, term)
+            # Don't attempt to resolve class names in use statements.
+            if scopeChain.indexOf('.support.other.namespace.use') == -1
+                className = @service.resolveTypeAt(editor, bufferPosition, term)
+
+            else
+                className = term
+
             classInfo = @service.getClassInfo(className)
 
         catch error
