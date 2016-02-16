@@ -28,10 +28,14 @@ class ClassProvider extends AbstractProvider
         @markers = {}
 
         atom.workspace.observeTextEditors (editor) =>
-            editor.onDidSave (event) =>
-                @rescanMarkers(editor)
+            @registerMarkers(editor)
 
-            @registerMarkers editor
+        # Ensure annotations are updated.
+        @service.onDidFinishIndexing (data) =>
+            editor = @findTextEditorByPath(data.path)
+
+            if editor?
+                @rescanMarkers(editor)
 
     ###*
      * @inheritdoc
@@ -40,6 +44,20 @@ class ClassProvider extends AbstractProvider
         super()
 
         @removeMarkers()
+
+    ###*
+     * Retrieves the text editor that is managing the file with the specified path.
+     *
+     * @param {string} path
+     *
+     * @return {TextEditor|null}
+    ###
+    findTextEditorByPath: (path) ->
+        for textEditor in atom.workspace.getTextEditors()
+            if textEditor.getPath() == path
+                return textEditor
+
+        return null
 
     ###*
      * @inheritdoc
