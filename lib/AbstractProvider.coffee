@@ -143,7 +143,9 @@ class AbstractProvider
 
         bufferPosition = atom.views.getView(editor).component.screenPositionForMouseEvent(event)
 
-        if @isValid(editor, bufferPosition, $(selector).text())
+        text = $(selector).text()
+
+        if @isValid(editor, bufferPosition, text)
             $(selector).addClass('php-integrator-navigation-navigation-possible')
 
         else
