@@ -62,41 +62,35 @@ class ClassProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    registerEvents: (editor) ->
-        super(editor)
+    onMouseClick: (editor, event) ->
+        super(editor, event)
 
-        if /text.html.php$/.test(editor.getGrammar().scopeName)
-            textEditorElement = atom.views.getView(editor)
-            scrollViewElement = $(textEditorElement.shadowRoot).find('.scroll-view')
+        if not event.handled
+            return # The parent did not handle the event, so we don't either.
 
-            # This is needed to be able to alt-click class names inside comments (docblocks).
-            @subAtom.add scrollViewElement, 'click', @clickEventSelectors, (event) =>
-                return unless event.altKey
+        # Class names inside comments require special treatment as their div doesn't actually contain any text, so we
+        # use markers to fetch the text instead.
+        selector = event.currentTarget
 
-                selector = event.currentTarget
+        return unless selector
 
-                return unless selector
+        if selector.className.indexOf('region') != -1
+            longTitle = editor.getLongTitle()
 
-                return unless not event.handled
+            return if longTitle not of @markers
 
-                # The other case will be handled by the existing handler.
-                if selector.className.indexOf('region') >= 0
-                    longTitle = editor.getLongTitle()
+            bufferPosition = atom.views.getView(editor).component.screenPositionForMouseEvent(event)
 
-                    return if longTitle not of @markers
+            markerProperties =
+                containsBufferPosition: bufferPosition
 
-                    markerProperties =
-                        containsBufferPosition: editor.cursors[0].getBufferPosition()
+            markers = editor.findMarkers(markerProperties)
 
-                    markers = editor.findMarkers markerProperties
-
-                    for key,marker of markers
-                        for allMarker in @markers[longTitle]
-                            if marker.id == allMarker.id
-                                @gotoFromWord(editor, marker.getProperties().term)
-                                break
-
-                    event.handled = true
+            for key,marker of markers
+                for allMarker in @markers[longTitle]
+                    if marker.id == allMarker.id
+                        @gotoFromWord(editor, bufferPosition, marker.getProperties().term)
+                        break
 
     ###*
      * Convenience method that returns information for the specified term.
@@ -156,10 +150,10 @@ class ClassProvider extends AbstractProvider
      * @inheritdoc
     ###
     getClickSelectorFromEvent: (event) ->
-        if event.currentTarget.className.indexOf('region') >= 0
+        # if event.currentTarget.className.indexOf('region') != -1
             # Class name inside a comment, we can't fetch the text of these elements (it will be empty), this is handled
             # by our override of registerEvents instead.
-            return null
+            # return null
 
         return @service.getClassSelectorFromEvent(event)
 
