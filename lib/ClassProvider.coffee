@@ -1,5 +1,5 @@
 $ = require 'jquery'
-fuzzaldrin = require 'fuzzaldrin'
+shell = require 'shell'
 
 AbstractProvider = require './AbstractProvider'
 

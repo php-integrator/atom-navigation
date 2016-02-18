@@ -17,8 +17,7 @@
   },
   "dependencies": {
     "jquery": "~2.1.4",
-    "sub-atom": "~1.0.0",
-    "fuzzaldrin": "^2.1.0"
+    "sub-atom": "~1.0.0"
   },
   "keywords": [
     "php",
