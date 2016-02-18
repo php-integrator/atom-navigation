@@ -121,10 +121,7 @@ class ClassProvider extends AbstractProvider
         catch error
             return null
 
-        if classInfo.filename
-            return classInfo
-
-        return null
+        return classInfo
 
     ###*
      * @inheritdoc
@@ -139,10 +136,14 @@ class ClassProvider extends AbstractProvider
         info = @getInfoFor(editor, bufferPosition, term)
 
         if info?
-            atom.workspace.open(info.filename, {
-                initialLine    : (info.startLine - 1),
-                searchAllPanes : true
-            })
+            if info.filename?
+                atom.workspace.open(info.filename, {
+                    initialLine    : (info.startLine - 1),
+                    searchAllPanes : true
+                })
+
+            else
+                shell.openExternal(@config.get('php_documentation_base_urls').classes + info.name)
 
     ###*
      * @inheritdoc

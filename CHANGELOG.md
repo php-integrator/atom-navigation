@@ -1,7 +1,7 @@
 ## 0.5.0 (base 0.6.0)
 * The dependency on fuzzaldrin was removed.
 * Fixed class constants being underlined as if no navigation was possible, while it was.
-* It is now possible to alt-click built-in functions to navigate to the PHP documentation in your browser.
+* It is now possible to alt-click built-in functions and classes to navigate to the PHP documentation in your browser.
 
 ## 0.4.0 (base 0.5.0)
 * The modifier keys that are used in combination with a mouse click are now modifiable as settings.
