@@ -27,6 +27,18 @@ class Config
             navigationRequireCtrlKey  : false
             navigationRequireShiftKey : false
 
+            # See also http://www.phpdoc.org/docs/latest/index.html .
+            phpdoc_base_url : {
+                prefix: 'http://www.phpdoc.org/docs/latest/references/phpdoc/tags/'
+                suffix: '.html'
+            }
+
+            # See also https://secure.php.net/urlhowto.php .
+            php_documentation_base_urls : {
+                classes   : 'https://secure.php.net/'
+                functions : 'https://secure.php.net/function.'
+            }
+
         @load()
 
     ###*

@@ -1,3 +1,5 @@
+shell = require 'shell'
+
 AbstractProvider = require './AbstractProvider'
 
 module.exports =
@@ -9,7 +11,7 @@ class FunctionProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    eventSelectors: '.function-call:not(.object):not(.static)'
+    eventSelectors: '.function-call:not(.object):not(.static), .support.function'
 
     ###*
      * Convenience method that returns information for the specified term.
@@ -22,7 +24,6 @@ class FunctionProvider extends AbstractProvider
         functions = @service.getGlobalFunctions()
 
         return null unless functions and term of functions
-        return null unless functions[term].filename
 
         return functions[term]
 
@@ -39,7 +40,11 @@ class FunctionProvider extends AbstractProvider
         info = @getInfoFor(editor, bufferPosition, term)
 
         if info?
-            atom.workspace.open(info.filename, {
-                initialLine    : (info.startLine - 1),
-                searchAllPanes : true
-            })
+            if info.filename?
+                atom.workspace.open(info.filename, {
+                    initialLine    : (info.startLine - 1),
+                    searchAllPanes : true
+                })
+
+            else
+                shell.openExternal(@config.get('php_documentation_base_urls').functions + info.name)

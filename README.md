@@ -10,6 +10,7 @@ This package provides code navigation for your PHP source code using [PHP Integr
 
 What is included?
   * Navigate to the definition of your global PHP constnats and functions.
+  * Navigate to the PHP documentation of built-in functions by alt-clicking them.
   * Navigate to the definition of classes, traits and interfaces by alt-clicking them.
   * Navigate to the definition of class, trait and interface members by alt-clicking them.
 
