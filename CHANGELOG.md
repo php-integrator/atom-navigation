@@ -1,3 +1,9 @@
+## 0.6.1
+* Fixed issues occurring when deactivating and reactivating the package.
+
+## 0.6.0 (base 0.7.0)
+* Update to use the most recent version of the base service.
+
 ## 0.5.0 (base 0.6.0)
 * The dependency on fuzzaldrin was removed.
 * Fixed class constants being underlined as if no navigation was possible, while it was.
