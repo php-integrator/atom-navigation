@@ -28,6 +28,11 @@ class AbstractProvider
     subAtom: null
 
     ###*
+     * A list of disposables to dispose when the package deactivates.
+    ###
+    disposables: null
+
+    ###*
      * Constructor.
      *
      * @param {Config} config
@@ -61,20 +66,23 @@ class AbstractProvider
      * Does the actual initialization.
     ###
     doActualInitialization: () ->
-        @subAtom = new SubAtom
+        {CompositeDisposable} = require 'atom';
 
-        atom.workspace.observeTextEditors (editor) =>
+        @subAtom     = new SubAtom()
+        @disposables = new CompositeDisposable()
+
+        @disposables.add atom.workspace.observeTextEditors (editor) =>
             @registerEvents editor
 
         # When you go back to only have one pane the events are lost, so need to re-register.
-        atom.workspace.onDidDestroyPane (pane) =>
+        @disposables.add atom.workspace.onDidDestroyPane (pane) =>
             panes = atom.workspace.getPanes()
 
             if panes.length == 1
                 @registerEventsForPane(panes[0])
 
         # Having to re-register events as when a new pane is created the old panes lose the events.
-        atom.workspace.onDidAddPane (observedPane) =>
+        @disposables.add atom.workspace.onDidAddPane (observedPane) =>
             panes = atom.workspace.getPanes()
 
             for pane in panes
@@ -95,6 +103,10 @@ class AbstractProvider
      * Deactives the provider.
     ###
     deactivate: () ->
+        if @disposables
+            @disposables.dispose()
+            @disposables = null
+
         if @subAtom
             @subAtom.dispose()
             @subAtom = null
