@@ -19,6 +19,19 @@ class ClassConstantProvider extends AbstractProvider
      * @param {string}     term
     ###
     getInfoFor: (editor, bufferPosition, term) ->
+        member = @getClassConstantAt(editor, bufferPosition, term)
+
+        return null unless member
+        return null unless member.declaringStructure.filename
+
+        return member
+
+    ###*
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
+     * @param {string}     term
+    ###
+    getClassConstantAt: (editor, bufferPosition, term) ->
         try
             className = @service.getResultingTypeAt(editor, bufferPosition, true)
 
@@ -27,15 +40,12 @@ class ClassConstantProvider extends AbstractProvider
             classInfo = @service.getClassInfo(className)
 
             if term of classInfo.constants
-                member = classInfo.constants[term]
+                return classInfo.constants[term]
 
         catch error
             return null
 
-        return null unless member
-        return null unless member.declaringStructure.filename
-
-        return member
+        return null
 
     ###*
      * @inheritdoc
