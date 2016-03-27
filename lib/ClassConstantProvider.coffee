@@ -20,7 +20,14 @@ class ClassConstantProvider extends AbstractProvider
     ###
     getInfoFor: (editor, bufferPosition, term) ->
         try
-            member = @service.getClassConstantAt(editor, bufferPosition, term)
+            className = @service.getResultingTypeAt(editor, bufferPosition, true)
+
+            return null unless className
+
+            classInfo = @service.getClassInfo(className)
+
+            if term of classInfo.constants
+                member = classInfo.constants[term]
 
         catch error
             return null
