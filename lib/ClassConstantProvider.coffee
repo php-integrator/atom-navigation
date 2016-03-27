@@ -27,9 +27,13 @@ class ClassConstantProvider extends AbstractProvider
         return member
 
     ###*
+     * Returns the class constant used at the specified location.
+     *
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
      * @param {string}     term
+     *
+     * @return {Object|null}
     ###
     getClassConstantAt: (editor, bufferPosition, term) ->
         try
