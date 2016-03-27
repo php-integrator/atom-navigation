@@ -29,25 +29,34 @@ class ClassConstantProvider extends AbstractProvider
     ###*
      * Returns the class constant used at the specified location.
      *
-     * @param {TextEditor} editor
-     * @param {Point}      bufferPosition
-     * @param {string}     term
+     * @param {TextEditor} editor         The text editor to use.
+     * @param {Point}      bufferPosition The cursor location of the member.
+     * @param {string}     name           The name of the member to retrieve information about.
      *
      * @return {Object|null}
     ###
-    getClassConstantAt: (editor, bufferPosition, term) ->
+    getClassConstantAt: (editor, bufferPosition, name) ->
+        className = @service.getResultingTypeAt(editor, bufferPosition, true)
+
+        return @getClassConstant(className, name)
+
+    ###*
+     * Retrieves information about the specified constant of the specified class.
+     *
+     * @param {string} className The full name of the class to examine.
+     * @param {string} name      The name of the constant to retrieve information about.
+     *
+     * @return {Object|null}
+    ###
+    getClassConstant: (className, name) ->
         try
-            className = @service.getResultingTypeAt(editor, bufferPosition, true)
-
-            return null unless className
-
             classInfo = @service.getClassInfo(className)
 
-            if term of classInfo.constants
-                return classInfo.constants[term]
-
-        catch error
+        catch
             return null
+
+        if name of classInfo.constants
+            return classInfo.constants[name]
 
         return null
 
