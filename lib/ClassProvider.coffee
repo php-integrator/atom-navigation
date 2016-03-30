@@ -149,7 +149,7 @@ class ClassProvider extends AbstractProvider
      * @inheritdoc
     ###
     getHoverSelectorFromEvent: (event) ->
-        return @service.getClassSelectorFromEvent(event)
+        return @getClassSelectorFromEvent(event)
 
     ###*
      * @inheritdoc
@@ -160,7 +160,33 @@ class ClassProvider extends AbstractProvider
             # by our override of registerEvents instead.
             # return null
 
-        return @service.getClassSelectorFromEvent(event)
+        return @getClassSelectorFromEvent(event)
+
+    ###*
+     * Gets the correct selector for the class or namespace that is part of the specified event.
+     *
+     * @param {jQuery.Event} event A jQuery event.
+     *
+     * @return {object|null} A selector to be used with jQuery.
+    ###
+    getClassSelectorFromEvent: (event) ->
+        selector = event.currentTarget
+
+        $ = require 'jquery'
+
+        if $(selector).parent().hasClass('function argument')
+            return $(selector).parent().children('.namespace, .class:not(.operator):not(.constant)')
+
+        if $(selector).prev().hasClass('namespace') && $(selector).hasClass('class')
+            return $([$(selector).prev()[0], selector])
+
+        if $(selector).next().hasClass('class') && $(selector).hasClass('namespace')
+           return $([selector, $(selector).next()[0]])
+
+        if $(selector).prev().hasClass('namespace') || $(selector).next().hasClass('inherited-class')
+            return $(selector).parent().children('.namespace, .inherited-class')
+
+        return selector
 
     ###*
      * Register any markers that you need.
