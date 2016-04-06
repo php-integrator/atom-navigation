@@ -1,3 +1,6 @@
+## 0.6.2 (base 0.8.0)
+* Update to use the most recent version of the base service.
+
 ## 0.6.1
 * Fixed issues occurring when deactivating and reactivating the package.
 
