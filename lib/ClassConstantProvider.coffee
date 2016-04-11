@@ -17,14 +17,20 @@ class ClassConstantProvider extends AbstractProvider
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
      * @param {string}     term
+     *
+     * @return {Promise}
     ###
     getInfoFor: (editor, bufferPosition, term) ->
-        member = @getClassConstantAt(editor, bufferPosition, term)
+        successHandler = (member) =>
+            return null unless member
+            return null unless member.declaringStructure.filename
 
-        return null unless member
-        return null unless member.declaringStructure.filename
+            return member
 
-        return member
+        failureHandler = () ->
+            # Do nothing.
+
+        return @getClassConstantAt(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
      * Returns the class constant used at the specified location.
@@ -33,12 +39,16 @@ class ClassConstantProvider extends AbstractProvider
      * @param {Point}      bufferPosition The cursor location of the member.
      * @param {string}     name           The name of the member to retrieve information about.
      *
-     * @return {Object|null}
+     * @return {Promise}
     ###
     getClassConstantAt: (editor, bufferPosition, name) ->
-        className = @service.getResultingTypeAt(editor, bufferPosition, true)
+        successHandler = (className) =>
+            return @getClassConstant(className, name)
 
-        return @getClassConstant(className, name)
+        failureHandler = () ->
+            # Do nothing.
+
+        return @service.getResultingTypeAt(editor, bufferPosition, true, true).then(successHandler, failureHandler)
 
     ###*
      * Retrieves information about the specified constant of the specified class.
@@ -46,34 +56,43 @@ class ClassConstantProvider extends AbstractProvider
      * @param {string} className The full name of the class to examine.
      * @param {string} name      The name of the constant to retrieve information about.
      *
-     * @return {Object|null}
+     * @return {Promise}
     ###
     getClassConstant: (className, name) ->
-        try
-            classInfo = @service.getClassInfo(className)
+        successHandler = (classInfo) =>
+            if name of classInfo.constants
+                return classInfo.constants[name]
 
-        catch
-            return null
+        failureHandler = () ->
+            # Do nothing.
 
-        if name of classInfo.constants
-            return classInfo.constants[name]
-
-        return null
+        return @service.getClassInfo(className, true).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
     ###
     isValid: (editor, bufferPosition, term) ->
-        return if @getInfoFor(editor, bufferPosition, term)? then true else false
+        successHandler = (info) =>
+            return if info then true else false
+
+        failureHandler = () ->
+            return false
+
+        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
     ###
     gotoFromWord: (editor, bufferPosition, term) ->
-        info = @getInfoFor(editor, bufferPosition, term)
+        successHandler = (info) =>
+            return if not info?
 
-        if info?
             atom.workspace.open(info.declaringStructure.filename, {
                 initialLine    : (info.declaringStructure.startLineMember - 1),
                 searchAllPanes: true
             })
+
+        failureHandler = () ->
+            # Do nothing.
+
+        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)

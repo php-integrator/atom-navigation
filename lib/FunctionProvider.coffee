@@ -19,27 +19,39 @@ class FunctionProvider extends AbstractProvider
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
      * @param {string}     term
+     *
+     * @return {Promise}
     ###
     getInfoFor: (editor, bufferPosition, term) ->
-        functions = @service.getGlobalFunctions()
+        successHandler = (functions) =>
+            return null unless functions and term of functions
 
-        return null unless functions and term of functions
+            return functions[term]
 
-        return functions[term]
+        failureHandler = () ->
+            # Do nothing.
+
+        return @service.getGlobalFunctions(true).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
     ###
     isValid: (editor, bufferPosition, term) ->
-        return if @getInfoFor(editor, bufferPosition, term)? then true else false
+        successHandler = (info) =>
+            return if info then true else false
+
+        failureHandler = () ->
+            return false
+
+        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
     ###
     gotoFromWord: (editor, bufferPosition, term) ->
-        info = @getInfoFor(editor, bufferPosition, term)
+        successHandler = (info) =>
+            return if not info?
 
-        if info?
             if info.filename?
                 atom.workspace.open(info.filename, {
                     initialLine    : (info.startLine - 1),
@@ -48,3 +60,8 @@ class FunctionProvider extends AbstractProvider
 
             else
                 shell.openExternal(@config.get('php_documentation_base_urls').functions + info.name)
+
+        failureHandler = () ->
+            # Do nothing.
+
+        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)

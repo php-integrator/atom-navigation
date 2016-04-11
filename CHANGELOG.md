@@ -1,3 +1,6 @@
+## 0.7.0 (base 0.9.0)
+* Navigation is now asynchronous (i.e. it uses the asynchronous method calls from the base service rather than synchronous calls).
+
 ## 0.6.2 (base 0.8.0)
 * Update to use the most recent version of the base service.
 

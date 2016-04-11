@@ -25,29 +25,46 @@ class ConstantProvider extends AbstractProvider
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
      * @param {string}     term
+     *
+     * @return {Promise}
     ###
     getInfoFor: (editor, bufferPosition, term) ->
-        constants = @service.getGlobalConstants()
+        successHandler = (constants) =>
+            return null unless constants and term of constants
+            return null unless constants[term].filename
 
-        return null unless constants and term of constants
-        return null unless constants[term].filename
+            return constants[term]
 
-        return constants[term]
+        failureHandler = () ->
+            # Do nothing.
+
+        return @service.getGlobalConstants(true).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
     ###
     isValid: (editor, bufferPosition, term) ->
-        return if @getInfoFor(editor, bufferPosition, term)? then true else false
+        successHandler = (info) =>
+            return if info then true else false
+
+        failureHandler = () ->
+            return false
+
+        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
     ###
     gotoFromWord: (editor, bufferPosition, term) ->
-        info = @getInfoFor(editor, bufferPosition, term)
+        successHandler = (info) =>
+            return if not info?
 
-        if info?
             atom.workspace.open(info.filename, {
                 initialLine    : (info.startLine - 1),
                 searchAllPanes : true
             })
+
+        failureHandler = () ->
+            # Do nothing.
+
+        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)

@@ -94,48 +94,66 @@ class ClassProvider extends AbstractProvider
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
      * @param {string}     term
+     *
+     * @return {Promise}
     ###
     getInfoFor: (editor, bufferPosition, term) ->
-        return null if not term
+        if not term
+            return new Promise (resolve, reject) ->
+                resolve(null)
+
+        failureHandler = () ->
+            # Do nothing.
 
         scopeChain = editor.scopeDescriptorForBufferPosition(bufferPosition).getScopeChain()
 
-        try
-            className = term
-            doResolve = true
-
-            # Don't attempt to resolve class names in use statements.
-            if scopeChain.indexOf('.support.other.namespace.use') != -1
-                currentClassName = @service.determineCurrentClassName(editor, bufferPosition)
-
+        # Don't attempt to resolve class names in use statements.
+        if scopeChain.indexOf('.support.other.namespace.use') != -1
+            successHandler = (currentClassName) =>
                 # Scope descriptors for trait use statements and actual "import" use statements are the same, so we
                 # have no choice but to use class information for this.
                 if not currentClassName?
-                    doResolve = false
+                    return false
+
+                return true
+
+            firstPromise = @service.determineCurrentClassName(editor, bufferPosition).then(successHandler, failureHandler)
+
+        else
+            firstPromise = new Promise (resolve, reject) ->
+                resolve(true)
+
+        successHandler = (doResolve) =>
+            className = term
 
             if doResolve
                 className = @service.resolveTypeAt(editor, bufferPosition, className)
 
             classInfo = @service.getClassInfo(className)
 
-        catch error
-            return null
+            return classInfo
 
-        return classInfo
+        return firstPromise.then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
     ###
     isValid: (editor, bufferPosition, term) ->
-        return if @getInfoFor(editor, bufferPosition, term)? then true else false
+        successHandler = (info) =>
+            return if info then true else false
+
+        failureHandler = () ->
+            return false
+
+        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
     ###
     gotoFromWord: (editor, bufferPosition, term) ->
-        info = @getInfoFor(editor, bufferPosition, term)
+        successHandler = (info) =>
+            return if not info?
 
-        if info?
             if info.filename?
                 atom.workspace.open(info.filename, {
                     initialLine    : (info.startLine - 1),
@@ -144,6 +162,11 @@ class ClassProvider extends AbstractProvider
 
             else
                 shell.openExternal(@config.get('php_documentation_base_urls').classes + info.name)
+
+        failureHandler = () ->
+            # Do nothing.
+
+        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
