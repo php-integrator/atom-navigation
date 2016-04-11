@@ -135,6 +135,8 @@ class AbstractProvider
      *
      * @param {TextEditor}  editor
      * @param {HTMLElement} selector
+     *
+     * @return {boolean}
     ###
     isValidForNavigation: (editor, selector) ->
         return true
