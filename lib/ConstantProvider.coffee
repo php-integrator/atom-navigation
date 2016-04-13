@@ -38,7 +38,7 @@ class ConstantProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        return @service.getGlobalConstants(true).then(successHandler, failureHandler)
+        return @service.getGlobalConstants().then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc

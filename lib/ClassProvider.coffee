@@ -124,14 +124,20 @@ class ClassProvider extends AbstractProvider
                 resolve(true)
 
         successHandler = (doResolve) =>
+            promise = null
             className = term
 
             if doResolve
-                className = @service.resolveTypeAt(editor, bufferPosition, className)
+                promise = @service.resolveTypeAt(editor, bufferPosition, className)
 
-            classInfo = @service.getClassInfo(className)
+            else
+                promise = new Promise (resolve, reject) ->
+                    resolve(className)
 
-            return classInfo
+            nestedSuccessHandler = (className) ->
+                return @service.getClassInfo(className)
+
+            return promise.then(nestedSuccessHandler, failureHandler)
 
         return firstPromise.then(successHandler, failureHandler)
 

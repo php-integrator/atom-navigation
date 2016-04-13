@@ -48,7 +48,7 @@ class ClassConstantProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        return @service.getResultingTypeAt(editor, bufferPosition, true, true).then(successHandler, failureHandler)
+        return @service.getResultingTypeAt(editor, bufferPosition, true).then(successHandler, failureHandler)
 
     ###*
      * Retrieves information about the specified constant of the specified class.
@@ -66,7 +66,7 @@ class ClassConstantProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        return @service.getClassInfo(className, true).then(successHandler, failureHandler)
+        return @service.getClassInfo(className).then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc

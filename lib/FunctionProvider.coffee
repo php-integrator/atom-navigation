@@ -31,7 +31,7 @@ class FunctionProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        return @service.getGlobalFunctions(true).then(successHandler, failureHandler)
+        return @service.getGlobalFunctions().then(successHandler, failureHandler)
 
     ###*
      * @inheritdoc
