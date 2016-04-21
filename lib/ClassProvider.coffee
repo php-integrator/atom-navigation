@@ -134,7 +134,7 @@ class ClassProvider extends AbstractProvider
                 promise = new Promise (resolve, reject) ->
                     resolve(className)
 
-            nestedSuccessHandler = (className) ->
+            nestedSuccessHandler = (className) =>
                 return @service.getClassInfo(className)
 
             return promise.then(nestedSuccessHandler, failureHandler)
