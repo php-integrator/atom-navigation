@@ -159,8 +159,12 @@ class AbstractProvider
 
         text = @getClickedTextByEvent(editor, event)
 
-        successHandler = () =>
-            $(selector).addClass('php-integrator-navigation-navigation-possible')
+        successHandler = (isValid) =>
+            if isValid
+                $(selector).addClass('php-integrator-navigation-navigation-possible')
+
+            else
+                $(selector).addClass('php-integrator-navigation-navigation-impossible')
 
         failureHandler = () =>
             $(selector).addClass('php-integrator-navigation-navigation-impossible')
