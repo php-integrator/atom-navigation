@@ -1,7 +1,7 @@
 {
   "name": "php-integrator-navigation",
   "main": "./lib/Main",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Provides code navigation and go to functionality for your PHP source code.",
   "repository": "https://github.com/Gert-dev/php-integrator-navigation.git",
   "license": "GPL-3.0",
