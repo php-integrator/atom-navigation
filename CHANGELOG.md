@@ -1,3 +1,6 @@
+## 0.7.1
+* It is now possible to navigate to the PHP documentation by clicking methods from built-in classes.
+
 ## 0.7.0 (base 0.9.0)
 * Navigation is now asynchronous (i.e. it uses the asynchronous method calls from the base service rather than synchronous calls).
 
