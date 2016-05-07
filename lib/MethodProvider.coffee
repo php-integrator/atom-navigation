@@ -1,3 +1,5 @@
+shell = require 'shell'
+
 AbstractProvider = require './AbstractProvider'
 
 module.exports =
@@ -23,7 +25,6 @@ class MethodProvider extends AbstractProvider
     getInfoFor: (editor, bufferPosition, term) ->
         successHandler = (member) =>
             return null unless member
-            return null unless member.declaringStructure.filename
 
             return member
 
@@ -91,10 +92,14 @@ class MethodProvider extends AbstractProvider
         successHandler = (info) =>
             return if not info?
 
-            atom.workspace.open(info.declaringStructure.filename, {
-                initialLine    : (info.declaringStructure.startLineMember - 1),
-                searchAllPanes : true
-            })
+            if info.declaringStructure.filename?
+                atom.workspace.open(info.declaringStructure.filename, {
+                    initialLine    : (info.declaringStructure.startLineMember - 1),
+                    searchAllPanes : true
+                })
+
+            else
+                shell.openExternal(@config.get('php_documentation_base_urls').classes + info.declaringStructure.name + '.' + info.name)
 
         failureHandler = () ->
             # Do nothing.
