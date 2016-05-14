@@ -23,18 +23,20 @@ class MethodProvider extends AbstractProvider
      * @return {Promise}
     ###
     getInfoFor: (editor, bufferPosition, term) ->
-        successHandler = (member) =>
-            return null unless member
+        successHandler = (members) =>
+            return null unless members.length > 0
+
+            member = members[0]
 
             return member
 
         failureHandler = () ->
             # Do nothing.
 
-        return @getClassMethodAt(editor, bufferPosition, term).then(successHandler, failureHandler)
+        return @getClassMethodsAt(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
-     * Returns the class method used at the specified location.
+     * Returns the class methods used at the specified location.
      *
      * @param {TextEditor} editor         The text editor to use.
      * @param {Point}      bufferPosition The cursor location of the member.
@@ -42,18 +44,23 @@ class MethodProvider extends AbstractProvider
      *
      * @return {Promise}
     ###
-    getClassMethodAt: (editor, bufferPosition, name) ->
+    getClassMethodsAt: (editor, bufferPosition, name) ->
         if not @isUsingMethod(editor, bufferPosition)
             return new Promise (resolve, reject) ->
                 resolve(null)
 
-        successHandler = (className) =>
-            return @getClassMethod(className, name)
+        successHandler = (types) =>
+            promises = []
+
+            for type in types
+                promises.push @getClassMethod(type, name)
+
+            return Promise.all(promises)
 
         failureHandler = () ->
             # Do nothing.
 
-        return @service.getResultingTypeAt(editor, bufferPosition, true).then(successHandler, failureHandler)
+        return @service.getResultingTypesAt(editor, bufferPosition, true).then(successHandler, failureHandler)
 
     ###*
      * Retrieves information about the specified method of the specified class.

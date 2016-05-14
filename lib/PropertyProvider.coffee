@@ -21,8 +21,11 @@ class PropertyProvider extends AbstractProvider
      * @return {Promise}
     ###
     getInfoFor: (editor, bufferPosition, term) ->
-        successHandler = (member) =>
-            return null unless member
+        successHandler = (members) =>
+            return null unless members.length > 0
+
+            member = members[0]
+
             return null unless member.declaringStructure.filename
 
             return member
@@ -30,10 +33,10 @@ class PropertyProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        return @getClassPropertyAt(editor, bufferPosition, term).then(successHandler, failureHandler)
+        return @getClassPropertiesAt(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
-     * Returns the class property used at the specified location.
+     * Returns the class properties used at the specified location.
      *
      * @param {TextEditor} editor         The text editor to use.
      * @param {Point}      bufferPosition The cursor location of the member.
@@ -41,18 +44,23 @@ class PropertyProvider extends AbstractProvider
      *
      * @return {Promise}
     ###
-    getClassPropertyAt: (editor, bufferPosition, name) ->
+    getClassPropertiesAt: (editor, bufferPosition, name) ->
         if not @isUsingProperty(editor, bufferPosition)
             return new Promise (resolve, reject) ->
                 resolve(null)
 
-        successHandler = (className) =>
-            return @getClassProperty(className, name)
+        successHandler = (types) =>
+            promises = []
+
+            for type in types
+                promises.push @getClassProperty(type, name)
+
+            return Promise.all(promises)
 
         failureHandler = () ->
             # Do nothing.
 
-        return @service.getResultingTypeAt(editor, bufferPosition, true).then(successHandler, failureHandler)
+        return @service.getResultingTypesAt(editor, bufferPosition, true).then(successHandler, failureHandler)
 
     ###*
      * Retrieves information about the specified property of the specified class.

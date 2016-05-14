@@ -21,8 +21,11 @@ class ClassConstantProvider extends AbstractProvider
      * @return {Promise}
     ###
     getInfoFor: (editor, bufferPosition, term) ->
-        successHandler = (member) =>
-            return null unless member
+        successHandler = (members) =>
+            return null unless members.length > 0
+
+            member = members[0]
+
             return null unless member.declaringStructure.filename
 
             return member
@@ -30,10 +33,10 @@ class ClassConstantProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        return @getClassConstantAt(editor, bufferPosition, term).then(successHandler, failureHandler)
+        return @getClassConstantsAt(editor, bufferPosition, term).then(successHandler, failureHandler)
 
     ###*
-     * Returns the class constant used at the specified location.
+     * Returns the class constants used at the specified location.
      *
      * @param {TextEditor} editor         The text editor to use.
      * @param {Point}      bufferPosition The cursor location of the member.
@@ -41,14 +44,19 @@ class ClassConstantProvider extends AbstractProvider
      *
      * @return {Promise}
     ###
-    getClassConstantAt: (editor, bufferPosition, name) ->
-        successHandler = (className) =>
-            return @getClassConstant(className, name)
+    getClassConstantsAt: (editor, bufferPosition, name) ->
+        successHandler = (types) =>
+            promises = []
+
+            for type in types
+                promises.push @getClassConstant(type, name)
+
+            return Promise.all(promises)
 
         failureHandler = () ->
             # Do nothing.
 
-        return @service.getResultingTypeAt(editor, bufferPosition, true).then(successHandler, failureHandler)
+        return @service.getResultingTypesAt(editor, bufferPosition, true).then(successHandler, failureHandler)
 
     ###*
      * Retrieves information about the specified constant of the specified class.
