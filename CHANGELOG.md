@@ -1,3 +1,6 @@
+## 1.0.0 (base 1.0.0)
+* Update to use the most recent version of the base service.
+
 ## 0.7.1
 * It is now possible to navigate to the PHP documentation by clicking methods from built-in classes.
 
