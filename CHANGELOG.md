@@ -1,3 +1,6 @@
+## 1.0.1
+* Fix the version specifier not being compatible with newer versions of the base service.
+
 ## 1.0.0 (base 1.0.0)
 * Update to use the most recent version of the base service.
 
