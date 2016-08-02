@@ -226,9 +226,9 @@ class ClassProvider extends AbstractProvider
         text = editor.getText()
         rows = text.split('\n')
 
-        for key,row of rows
-            regex = /@param|@var|@return|@throws|@see/g
+        regex = /@param|@var|@return|@throws|@see/g
 
+        for key,row of rows
             if regex.test(row)
                 @addMarkerToCommentLine(row.split(' '), parseInt(key), editor, true)
 
@@ -280,9 +280,9 @@ class ClassProvider extends AbstractProvider
      * @param {int} offset        = 0 Any offset that should be applied when creating the marker.
     ###
     addMarkerToCommentLine: (words, rowIndex, editor, shouldBreak, currentIndex = 0, offset = 0) ->
-        for key,value of words
-            regex = /^\\?([A-Za-z0-9_]+)\\?([A-Za-zA-Z_\\]*)?/g
+        regex = /^\\?([A-Za-z0-9_]+)\\?([A-Za-zA-Z_\\]*)?/g
 
+        for key,value of words
             if regex.test(value) && @service.isBasicType(value) == false
                 if value.includes('|')
                     @addMarkerToCommentLine value.split('|'), rowIndex, editor, false, currentIndex, parseInt(key)
