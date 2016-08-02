@@ -283,6 +283,8 @@ class ClassProvider extends AbstractProvider
         regex = /^(\\?([A-Za-z0-9_]+)\\?([A-Za-zA-Z_\\]*)?)/g
 
         for key,value of words
+            continue if value.length == 0
+
             newValue = value.match(regex)
 
             if newValue? && @service.isBasicType(value) == false
