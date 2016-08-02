@@ -283,16 +283,15 @@ class ClassProvider extends AbstractProvider
         regex = /^(\\?([A-Za-z0-9_]+)\\?([A-Za-zA-Z_\\]*)?)/g
 
         for key,value of words
-            if regex.test(value) && @service.isBasicType(value) == false
+            newValue = value.match(regex)
+
+            if newValue? && @service.isBasicType(value) == false
+                newValue = newValue[0]
+
                 if value.includes('|')
                     @addMarkerToCommentLine value.split('|'), rowIndex, editor, false, currentIndex, parseInt(key)
 
                 else
-                    newValue = value
-
-                    newValue = value.match(regex)
-                    newValue = newValue[0]
-
                     range = [
                         [rowIndex, currentIndex + parseInt(key) + offset],
                         [rowIndex, currentIndex + parseInt(key) + newValue.length + offset]
