@@ -1,6 +1,7 @@
 ## 1.1.0 (base 1.3.0)
 * Update to use the most recent version of the base service.
 * Fix navigation to qualified global constants with namespace prefix not working.
+* Fix navigation to qualified global functions with namespace prefix not working.
 
 ## 1.0.2
 * Fix not being able to navigate to annotation classes (e.g. Doctrine or Symfony annotations).
