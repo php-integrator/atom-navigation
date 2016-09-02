@@ -30,6 +30,9 @@ class ConstantProvider extends AbstractProvider
     ###
     getInfoFor: (editor, bufferPosition, term) ->
         successHandler = (constants) =>
+            if term?[0] != '\\'
+                term = '\\' + term
+                
             return null unless constants and term of constants
             return null unless constants[term].filename
 

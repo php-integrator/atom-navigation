@@ -1,3 +1,6 @@
+## 1.1.0 (base 1.3.0)
+* Update to use the most recent version of the base service.
+
 ## 1.0.2
 * Fix not being able to navigate to annotation classes (e.g. Doctrine or Symfony annotations).
 * Fix not being able to navigate to types if they were suffixed with square brackets, i.e. `Foo[]`.

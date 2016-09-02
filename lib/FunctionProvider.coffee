@@ -24,6 +24,9 @@ class FunctionProvider extends AbstractProvider
     ###
     getInfoFor: (editor, bufferPosition, term) ->
         successHandler = (functions) =>
+            if term?[0] != '\\'
+                term = '\\' + term
+
             return null unless functions and term of functions
 
             return functions[term]
