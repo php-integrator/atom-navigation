@@ -192,11 +192,7 @@ class ClassProvider extends AbstractProvider
         return @getClassSelectorFromEvent(event)
 
     ###*
-     * Gets the correct selector for the class or namespace that is part of the specified event.
-     *
-     * @param {jQuery.Event} event A jQuery event.
-     *
-     * @return {object|null} A selector to be used with jQuery.
+     * @inheritdoc
     ###
     getClassSelectorFromEvent: (event) ->
         selector = event.currentTarget
