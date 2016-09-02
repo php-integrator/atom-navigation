@@ -9,7 +9,7 @@ class ConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    eventSelectors: '.constant.other.php'
+    eventSelectors: '.constant.other.php, .support.other.namespace.php'
 
     ###*
      * @inheritdoc
@@ -17,7 +17,7 @@ class ConstantProvider extends AbstractProvider
     isValidForNavigation: (editor, selector) ->
         # The selector from this provider will still match class constants due to the way SubAtom does its class
         # selector checks. Filter these out.
-        return if selector.className.indexOf('other class php') != -1 then false else true
+        return if selector[0].className.indexOf('other class php') != -1 then false else true
 
     ###*
      * Convenience method that returns information for the specified term.
@@ -32,7 +32,7 @@ class ConstantProvider extends AbstractProvider
         successHandler = (constants) =>
             if term?[0] != '\\'
                 term = '\\' + term
-                
+
             return null unless constants and term of constants
             return null unless constants[term].filename
 
@@ -71,3 +71,35 @@ class ConstantProvider extends AbstractProvider
             # Do nothing.
 
         @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
+
+    ###*
+     * @inheritdoc
+    ###
+    getHoverSelectorFromEvent: (event) ->
+        return @getClassSelectorFromEvent(event)
+
+    ###*
+     * @inheritdoc
+    ###
+    getClickSelectorFromEvent: (event) ->
+        return @getClassSelectorFromEvent(event)
+
+    ###*
+     * Gets the correct selector for the constant that is part of the specified event.
+     *
+     * @param {jQuery.Event} event A jQuery event.
+     *
+     * @return {object|null} A selector to be used with jQuery.
+    ###
+    getClassSelectorFromEvent: (event) ->
+        selector = event.currentTarget
+
+        $ = require 'jquery'
+
+        if $(selector).prev().hasClass('namespace') && $(selector).hasClass('constant')
+            return $([$(selector).prev()[0], selector])
+
+        if $(selector).next().hasClass('constant') && $(selector).hasClass('namespace')
+            return $([selector, $(selector).next()[0]])
+
+        return $(selector)
