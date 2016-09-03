@@ -35,7 +35,8 @@ class Config
 
             # See also https://secure.php.net/urlhowto.php .
             php_documentation_base_urls : {
-                classes   : 'https://secure.php.net/'
+                root      : 'https://secure.php.net/'
+                classes   : 'https://secure.php.net/class.'
                 functions : 'https://secure.php.net/function.'
             }
 

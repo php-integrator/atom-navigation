@@ -289,3 +289,19 @@ class AbstractProvider
     ###
     getClickSelectorFromEvent: (event) ->
         return event.currentTarget
+
+    ###*
+     * @param {String} name
+     *
+     * @return {String}
+    ###
+    getNormalizeFqcnDocumentationUrl: (name) ->
+        return name.replace(/\\/g, '-').substr(1).toLowerCase()
+
+    ###*
+     * @param {String} name
+     *
+     * @return {String}
+    ###
+    getNormalizeMethodDocumentationUrl: (name) ->
+        return name.replace(/^__/, '')

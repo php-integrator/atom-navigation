@@ -106,7 +106,7 @@ class MethodProvider extends AbstractProvider
                 })
 
             else
-                shell.openExternal(@config.get('php_documentation_base_urls').classes + info.declaringStructure.name + '.' + info.name)
+                shell.openExternal(@config.get('php_documentation_base_urls').root + @getNormalizeFqcnDocumentationUrl(info.declaringStructure.name) + '.' + @getNormalizeMethodDocumentationUrl(info.name))
 
         failureHandler = () ->
             # Do nothing.

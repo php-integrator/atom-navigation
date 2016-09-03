@@ -2,6 +2,8 @@
 * Update to use the most recent version of the base service.
 * Fix navigation to qualified global constants with namespace prefix not working.
 * Fix navigation to qualified global functions with namespace prefix not working.
+* Fix not being able to navigate to the PHP documentation for built-in classes with longer FQCN's, such as classes from MongoDB.
+* Fix not being able to navigate to method names with leading slashes, such as `__toString`, because PHP's URL endpoints are terrifically consistent.
 
 ## 1.0.2
 * Fix not being able to navigate to annotation classes (e.g. Doctrine or Symfony annotations).
