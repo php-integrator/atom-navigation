@@ -167,7 +167,7 @@ class ClassProvider extends AbstractProvider
                 })
 
             else
-                shell.openExternal(@config.get('php_documentation_base_urls').classes + info.name)
+                shell.openExternal(@config.get('php_documentation_base_urls').classes + info.shortName)
 
         failureHandler = () ->
             # Do nothing.
