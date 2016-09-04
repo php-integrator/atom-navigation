@@ -102,4 +102,7 @@ class ConstantProvider extends AbstractProvider
         if $(selector).next().hasClass('constant') && $(selector).hasClass('namespace')
             return $([selector, $(selector).next()[0]])
 
+        if not $(selector).hasClass('constant')
+            return null
+
         return $(selector)

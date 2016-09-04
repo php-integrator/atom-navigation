@@ -215,7 +215,7 @@ class ClassProvider extends AbstractProvider
         if $(selector).prev().hasClass('namespace') || $(selector).next().hasClass('inherited-class')
             return $(selector).parent().children('.namespace, .inherited-class')
 
-        if $(selector).next().hasClass('constant') && $(selector).hasClass('namespace')
+        if not $(selector).hasClass('class') and not $(selector).hasClass('inherited-class')
            return null
 
         return selector
