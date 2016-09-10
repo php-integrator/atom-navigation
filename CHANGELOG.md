@@ -1,3 +1,6 @@
+## 1.0.3
+* Rename the package and repository.
+
 ## 1.0.2
 * Fix not being able to navigate to annotation classes (e.g. Doctrine or Symfony annotations).
 * Fix not being able to navigate to types if they were suffixed with square brackets, i.e. `Foo[]`.
