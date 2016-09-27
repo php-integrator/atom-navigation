@@ -85,7 +85,6 @@ module.exports =
         @getHyperclickProvider().setService(service)
 
         # TODO: Clean up docblocks, refactor.
-        # TODO: Switching fixes #7, #9 and #19.
         # TODO: Clean up dependencies, no longer need SubAtom and probably jQuery either.
         # TODO: Might want to install hyperclick automatically via atom-package-dependencies.
         # TODO: Test package deactivation and reactivation. PHP hyperclick should not be working if deactivated.
