@@ -58,6 +58,8 @@ module.exports =
      * Activates the package.
     ###
     activate: () ->
+        require('atom-package-deps').install(@packageName).then () =>
+            # We're done!
 
     ###*
      * Deactivates the package.
@@ -82,7 +84,6 @@ module.exports =
             @atomConfig = new AtomConfig(@packageName)
 
         return @atomConfig
-
 
     ###*
      * @return {HyperclickProviderDispatcher}

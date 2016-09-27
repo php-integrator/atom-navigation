@@ -22,7 +22,12 @@
       }
     }
   },
-  "dependencies": {},
+  "dependencies": {
+      "atom-package-deps": "^4.3.1"
+  },
+  "package-deps": [
+    "hyperclick"
+  ],
   "keywords": [
     "php",
     "goto",
