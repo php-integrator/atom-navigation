@@ -1,6 +1,8 @@
 $ = require 'jquery'
 shell = require 'shell'
 
+{Point, Range} = require 'atom'
+
 AbstractProvider = require './AbstractProvider'
 
 module.exports =
@@ -10,90 +12,164 @@ module.exports =
 ##
 class ClassProvider extends AbstractProvider
     ###*
-     * @inheritdoc
-    ###
-    eventSelectors: '.entity.inherited-class, .support.namespace, .support.class, .comment-clickable .region'
-
-    ###*
      * A list of all markers that have been placed inside comments to allow code navigation there as well.
+     *
+     * @var {Object}
     ###
     markers: null
 
     ###*
      * @inheritdoc
     ###
-    doActualInitialization: () ->
-        super()
+    canProvideForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
 
-        @markers = {}
+        if 'punctuation' in classList and 'inheritance' in classList
+            classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
 
-        atom.workspace.observeTextEditors (editor) =>
-            @registerMarkers(editor)
+        return true if 'class' in classList and 'support' in classList
+        return true if 'inherited-class' in classList
+        return true if 'namespace' in classList and 'use' in classList
+        return true if 'phpdoc' in classList
 
-        # Ensure annotations are updated.
-        @service.onDidFinishIndexing (data) =>
-            editor = @findTextEditorByPath(data.path)
+        classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition)
 
-            if editor?
-                @rescanMarkers(editor)
+        return true if 'namespace' in classList and ('class' in classListFollowingBufferPosition or 'inherited-class' in classListFollowingBufferPosition)
 
-    ###*
-     * @inheritdoc
-    ###
-    deactivate: () ->
-        super()
-
-        @removeMarkers()
+        return false
 
     ###*
-     * Retrieves the text editor that is managing the file with the specified path.
-     *
-     * @param {string} path
-     *
-     * @return {TextEditor|null}
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
     ###
-    findTextEditorByPath: (path) ->
-        for textEditor in atom.workspace.getTextEditors()
-            if textEditor.getPath() == path
-                return textEditor
+    getRangeForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
 
-        return null
+        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+
+        # Atom's consistency regarding the namespace separator splitting a namespace prefix and an actual class name
+        # leaves something to be desired: sometimes it's part of the namespace, other times it's in its own class,
+        # in even other cases it has no class at all. For some reason fetching the range for the scope also returns
+        # "undefined". This entire if-block exists only to handle this corner case.
+        if not range?
+            newBufferPosition = bufferPosition.copy()
+            --newBufferPosition.column
+
+            classList = @getClassListForBufferPosition(editor, newBufferPosition)
+
+            if 'punctuation' in classList and 'inheritance' in classList
+                classList = @getClassListForBufferPosition(editor, newBufferPosition, 2)
+
+            range = editor.bufferRangeForScopeAtPosition(classList.join('.'), newBufferPosition)
+
+            ++bufferPosition.column
+
+        if ('class' in classList and 'support' in classList) or 'inherited-class' in classList
+            prefixRange = new Range(
+                new Point(range.start.row, range.start.column - 2),
+                new Point(range.start.row, range.start.column - 0)
+            )
+
+            # Expand the range to include the namespace prefix, if present. We use two positions before the constant as
+            # the slash itself sometimes has a "punctuation" class instead of a "namespace" class or, if it is alone, no
+            # class at all.
+            prefixText = editor.getTextInBufferRange(prefixRange)
+
+            if prefixText.endsWith("\\")
+                prefixClassList = @getClassListForBufferPosition(editor, prefixRange.start)
+
+                if "namespace" in prefixClassList
+                    namespaceRange = editor.bufferRangeForScopeAtPosition(prefixClassList.join('.'), prefixRange.start)
+
+                else
+                    namespaceRange = range
+                    namespaceRange.start.column--
+
+                range = namespaceRange.union(range)
+
+        else if 'namespace' in classList
+            suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+
+            # Expand the range to include the constant name, if present.
+            if ('class' in suffixClassList and 'support' in suffixClassList) or 'inherited-class' in suffixClassList
+                constantRange = editor.bufferRangeForScopeAtPosition(suffixClassList.join('.'), new Point(range.end.row, range.end.column + 1))
+
+                range = range.union(constantRange)
+
+        else if 'phpdoc' in classList
+            # Docblocks are seen as one entire region of text as they don't have syntax highlighting. Use regular
+            # expressions instead to find interesting parts containing class names.
+            lineText = editor.lineTextForBufferRow(bufferPosition.row)
+
+            ranges = []
+
+            if /@param|@var|@return|@throws|@see/g.test(lineText)
+                ranges = @getRangesForDocblockLine(lineText.split(' '), parseInt(bufferPosition.row), editor, true, 0, 0, false)
+
+            else if /@\\?([A-Za-z0-9_]+)\\?([A-Za-zA-Z_\\]*)?/g.test(lineText)
+                ranges = @getRangesForDocblockLine(lineText.split(' '), parseInt(bufferPosition.row), editor, true, 0, 0, true)
+
+            for range in ranges
+                if range.containsPoint(bufferPosition)
+                    return range
+
+            return null
+
+        return range
 
     ###*
-     * @inheritdoc
+     * @param {Array}      words        The array of words to check.
+     * @param {Number}     rowIndex     The current row the words are on within the editor.
+     * @param {TextEditor} editor       The editor the words are from.
+     * @param {bool}       shouldBreak  Flag to say whether the search should break after finding 1 class.
+     * @param {Number}     currentIndex The current column index the search is on.
+     * @param {Number}     offset       Any offset that should be applied when creating the marker.
     ###
-    getClickedTextByEvent: (editor, event) ->
-        selector = event.currentTarget
+    getRangesForDocblockLine: (words, rowIndex, editor, shouldBreak, currentIndex = 0, offset = 0, isAnnotation = false) ->
+        if isAnnotation
+            regex = /^@(\\?(?:[A-Za-z0-9_]+)\\?(?:[A-Za-zA-Z_\\]*)?)/g
 
-        return null unless selector
+        else
+            regex = /^(\\?(?:[A-Za-z0-9_]+)\\?(?:[A-Za-zA-Z_\\]*)?)/g
 
-        # Class names inside comments require special treatment as their div doesn't actually contain any text, so we
-        # use markers to fetch the text instead.
-        if selector.className.indexOf('region') != -1
-            longTitle = editor.getLongTitle()
+        ranges = []
 
-            return if longTitle not of @markers
+        for key,value of words
+            continue if value.length == 0
 
-            bufferPosition = atom.views.getView(editor).component.screenPositionForMouseEvent(event)
+            newValue = value.match(regex)
 
-            markerProperties =
-                containsBufferPosition: bufferPosition
+            if newValue? && @service.isBasicType(value) == false
+                newValue = newValue[0]
 
-            markers = editor.findMarkers(markerProperties)
+                if value.includes('|')
+                    ranges = ranges.concat(@getRangesForDocblockLine(value.split('|'), rowIndex, editor, false, currentIndex, parseInt(key)))
 
-            for key,marker of markers
-                for allMarker in @markers[longTitle]
-                    if marker.id == allMarker.id
-                        return marker.getProperties().term
+                else
+                    if isAnnotation
+                        newValue = newValue.substr(1)
+                        currentIndex += 1
 
-        return super(editor, event)
+                    range = new Range(
+                        new Point(rowIndex, currentIndex + parseInt(key) + offset),
+                        new Point(rowIndex, currentIndex + parseInt(key) + newValue.length + offset)
+                    )
+
+                    ranges.push(range)
+
+                if shouldBreak == true
+                    break
+
+            currentIndex += value.length;
+
+        return ranges
 
     ###*
      * Convenience method that returns information for the specified term.
      *
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
-     * @param {string}     term
+     * @param {String}     term
      *
      * @return {Promise}
     ###
@@ -144,19 +220,7 @@ class ClassProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    isValid: (editor, bufferPosition, term) ->
-        successHandler = (info) =>
-            return if info then true else false
-
-        failureHandler = () ->
-            return false
-
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
-
-    ###*
-     * @inheritdoc
-    ###
-    gotoFromWord: (editor, bufferPosition, term) ->
+    handleSpecificNavigation: (editor, range, text) ->
         successHandler = (info) =>
             return if not info?
 
@@ -172,169 +236,4 @@ class ClassProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
-
-    ###*
-     * @inheritdoc
-    ###
-    getHoverSelectorFromEvent: (event) ->
-        return @getClassSelectorFromEvent(event)
-
-    ###*
-     * @inheritdoc
-    ###
-    getClickSelectorFromEvent: (event) ->
-        # if event.currentTarget.className.indexOf('region') != -1
-            # Class name inside a comment, we can't fetch the text of these elements (it will be empty), this is handled
-            # by our override of registerEvents instead.
-            # return null
-
-        return @getClassSelectorFromEvent(event)
-
-    ###*
-     * Gets the correct selector for the class or namespace that is part of the specified event.
-     *
-     * @param {jQuery.Event} event A jQuery event.
-     *
-     * @return {object|null} A selector to be used with jQuery.
-    ###
-    getClassSelectorFromEvent: (event) ->
-        selector = event.currentTarget
-
-        $ = require 'jquery'
-
-        if $(selector).parent().hasClass('function argument')
-            return $(selector).parent().children('.namespace, .class:not(.operator):not(.constant)')
-
-        if $(selector).prev().hasClass('namespace') && $(selector).hasClass('class')
-            return $([$(selector).prev()[0], selector])
-
-        if $(selector).next().hasClass('class') && $(selector).hasClass('namespace')
-           return $([selector, $(selector).next()[0]])
-
-        if $(selector).prev().hasClass('namespace') || $(selector).next().hasClass('inherited-class')
-            return $(selector).parent().children('.namespace, .inherited-class')
-
-        if not $(selector).hasClass('class') and
-            not $(selector).hasClass('inherited-class') and
-            not $(selector).hasClass('use') and
-            not $(selector).hasClass('region')
-           return null
-
-        return selector
-
-    ###*
-     * Register any markers that you need.
-     *
-     * @param {TextEditor} editor The editor to search through.
-    ###
-    registerMarkers: (editor) ->
-        text = editor.getText()
-        rows = text.split('\n')
-
-        for key,row of rows
-            if /@param|@var|@return|@throws|@see/g.test(row)
-                @addMarkerToCommentLine(row.split(' '), parseInt(key), editor, true, 0, 0, false)
-
-            else if /@\\?([A-Za-z0-9_]+)\\?([A-Za-zA-Z_\\]*)?/g.test(row)
-                @addMarkerToCommentLine(row.split(' '), parseInt(key), editor, true, 0, 0, true)
-
-    ###*
-     * Removes any annotations that were created for the specified editor.
-     *
-     * @param {TextEditor} editor
-    ###
-    removeMarkersFor: (editor) ->
-        @removeMarkersByKey(editor.getLongTitle())
-
-    ###*
-     * Removes any annotations that were created with the specified key.
-     *
-     * @param {string} key
-    ###
-    removeMarkersByKey: (key) ->
-        for i,marker of @markers[key]
-            marker.destroy()
-
-        @markers[key] = []
-
-    ###*
-     * Removes any annotations (across all editors).
-    ###
-    removeMarkers: () ->
-        for key,markers of @markers
-            @removeMarkersByKey(key)
-
-        @markers = {}
-
-    ###*
-     * Rescans the editor, updating all annotations.
-     *
-     * @param {TextEditor} editor The editor to search through.
-    ###
-    rescanMarkers: (editor) ->
-        @removeMarkersFor(editor)
-        @registerMarkers(editor)
-
-    ###*
-     * Analyses the words array given for any classes and then creates a marker for them.
-     *
-     * @param {array} words           The array of words to check.
-     * @param {int} rowIndex          The current row the words are on within the editor.
-     * @param {TextEditor} editor     The editor the words are from.
-     * @param {bool} shouldBreak      Flag to say whether the search should break after finding 1 class.
-     * @param {int} currentIndex  = 0 The current column index the search is on.
-     * @param {int} offset        = 0 Any offset that should be applied when creating the marker.
-    ###
-    addMarkerToCommentLine: (words, rowIndex, editor, shouldBreak, currentIndex = 0, offset = 0, isAnnotation = false) ->
-        if isAnnotation
-            regex = /^@(\\?(?:[A-Za-z0-9_]+)\\?(?:[A-Za-zA-Z_\\]*)?)/g
-
-        else
-            regex = /^(\\?(?:[A-Za-z0-9_]+)\\?(?:[A-Za-zA-Z_\\]*)?)/g
-
-        for key,value of words
-            continue if value.length == 0
-
-            newValue = value.match(regex)
-
-            if newValue? && @service.isBasicType(value) == false
-                newValue = newValue[0]
-
-                if value.includes('|')
-                    @addMarkerToCommentLine value.split('|'), rowIndex, editor, false, currentIndex, parseInt(key)
-
-                else
-                    if isAnnotation
-                        newValue = newValue.substr(1)
-                        currentIndex += 1
-
-                    range = [
-                        [rowIndex, currentIndex + parseInt(key) + offset],
-                        [rowIndex, currentIndex + parseInt(key) + newValue.length + offset]
-                    ]
-
-                    marker = editor.markBufferRange(range)
-
-                    markerProperties =
-                        term: newValue
-
-                    marker.setProperties markerProperties
-
-                    options =
-                        type: 'highlight'
-                        class: 'comment-clickable comment'
-
-                    editor.decorateMarker marker, options
-
-                    longTitle = editor.getLongTitle()
-
-                    if longTitle not of @markers
-                        @markers[longTitle] = []
-
-                    @markers[longTitle].push(marker)
-
-                if shouldBreak == true
-                    break
-
-            currentIndex += value.length;
+        @getInfoFor(editor, range.start, text).then(successHandler, failureHandler)

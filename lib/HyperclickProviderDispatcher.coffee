@@ -62,6 +62,8 @@ class HyperclickProviderDispatcher extends AbstractProvider
 
             callback : () =>
                 for interestedProviderInfo in interestedProviderInfoList
+                    continue if not interestedProviderInfo.range?
+
                     text = editor.getTextInBufferRange(interestedProviderInfo.range)
 
                     interestedProviderInfo.provider.handleNavigation(editor, interestedProviderInfo.range, text)
