@@ -1,4 +1,3 @@
-$ = require 'jquery'
 shell = require 'shell'
 
 {Point, Range} = require 'atom'

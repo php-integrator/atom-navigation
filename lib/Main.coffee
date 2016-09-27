@@ -72,9 +72,6 @@ module.exports =
     setService: (service) ->
         @getHyperclickProvider().setService(service)
 
-        # TODO: Clean up dependencies, no longer need SubAtom and probably jQuery either.
-        # TODO: Might want to install hyperclick automatically via atom-package-dependencies.
-
     ###*
      * @return {AtomConfig}
     ###

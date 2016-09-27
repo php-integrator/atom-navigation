@@ -22,9 +22,7 @@
       }
     }
   },
-  "dependencies": {
-    "jquery": "~2.1.4"
-  },
+  "dependencies": {},
   "keywords": [
     "php",
     "goto",
