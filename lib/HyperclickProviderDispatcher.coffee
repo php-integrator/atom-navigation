@@ -17,6 +17,11 @@ class HyperclickProviderDispatcher extends AbstractProvider
     providers: null
 
     ###*
+     * @var {Object}
+    ###
+    service: null
+
+    ###*
      * Constructor.
     ###
     constructor: () ->
@@ -28,10 +33,14 @@ class HyperclickProviderDispatcher extends AbstractProvider
     addProvider: (provider) ->
         @providers.push(provider)
 
+        provider.setService(@service)
+
     ###*
      * @param {Object} service
     ###
     setService: (service) ->
+        @service = service
+
         for provider in @providers
             provider.setService(service)
 
