@@ -12,19 +12,26 @@ class FunctionProvider extends AbstractProvider
      * @inheritdoc
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
 
-        if 'function' in classList or ('function-call' in classList and 'object' not in classList and 'static' not in classList)
-            return true
+        return true if 'function-call' in classList and 'object' not in classList and 'static' not in classList
+
+        classList = @getClassListForBufferPosition(editor, bufferPosition, 1)
+
+        return true if 'function' in classList
+        return true if 'function-call' in classList and 'object' not in classList and 'static' not in classList
 
         return false
 
-
     ###*
-     * @inheritdoc
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+
+        if 'function-call' not in classList
+            classList = @getClassListForBufferPosition(editor, bufferPosition, 1)
 
         range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
 

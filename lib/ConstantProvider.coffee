@@ -1,3 +1,5 @@
+{Point, Range} = require 'atom'
+
 AbstractProvider = require './AbstractProvider'
 
 module.exports =
@@ -9,34 +11,70 @@ class ConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    eventSelectors: '.constant.other.php, .support.other.namespace.php'
+    canProvideForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        return true if 'constant'  in classList and 'class' not in classList
+        return true if 'namespace' in classList and 'constant' in @getClassListFollowingBufferPosition(editor, bufferPosition)
+
+        return false
 
     ###*
      * @inheritdoc
     ###
-    isValidForNavigation: (editor, selector) ->
-        # The selector from this provider will still match class constants due to the way SubAtom does its class
-        # selector checks. Filter these out.
-        return if selector[0].className.indexOf('other class php') != -1 then false else true
+    getRangeForBufferPosition: (editor, bufferPosition) ->
+        range = super(editor, bufferPosition)
 
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        if 'constant' in classList
+            prefixRange = new Range(
+                new Point(range.start.row, range.start.column - 2),
+                new Point(range.start.row, range.start.column - 0)
+            )
+
+            # Expand the range to include the namespace prefix, if present. We use two positions before the constant as
+            # the slash itself sometimes has a "punctuation" class instead of a "namespace" class or, if it is alone, no
+            # class at all.
+            prefixText = editor.getTextInBufferRange(prefixRange)
+
+            if prefixText.endsWith("\\")
+                prefixClassList = @getClassListForBufferPosition(editor, prefixRange.start)
+
+                if "namespace" in prefixClassList
+                    namespaceRange = editor.bufferRangeForScopeAtPosition(prefixClassList.join('.'), prefixRange.start)
+
+                else
+                    namespaceRange = range
+                    namespaceRange.start.column--
+
+                range = namespaceRange.union(range)
+
+        else if 'namespace' in classList
+            suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+
+            # Expand the range to include the constant name, if present.
+            if 'constant' in suffixClassList
+                constantRange = editor.bufferRangeForScopeAtPosition(suffixClassList.join('.'), new Point(range.end.row, range.end.column + 1))
+
+                range = range.union(constantRange)
+
+        return range
+        
     ###*
-     * Convenience method that returns information for the specified term.
-     *
-     * @param {TextEditor} editor
-     * @param {Point}      bufferPosition
-     * @param {string}     term
+     * @param {String} text
      *
      * @return {Promise}
     ###
-    getInfoFor: (editor, bufferPosition, term) ->
+    getInfoFor: (text) ->
         successHandler = (constants) =>
-            if term?[0] != '\\'
-                term = '\\' + term
+            if text?[0] != '\\'
+                text = '\\' + text
 
-            return null unless constants and term of constants
-            return null unless constants[term].filename
+            return null unless constants and text of constants
+            return null unless constants[text].filename
 
-            return constants[term]
+            return constants[text]
 
         failureHandler = () ->
             # Do nothing.
@@ -46,19 +84,7 @@ class ConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    isValid: (editor, bufferPosition, term) ->
-        successHandler = (info) =>
-            return if info then true else false
-
-        failureHandler = () ->
-            return false
-
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
-
-    ###*
-     * @inheritdoc
-    ###
-    gotoFromWord: (editor, bufferPosition, term) ->
+    handleSpecificNavigation: (editor, bufferPosition, text) ->
         successHandler = (info) =>
             return if not info?
 
@@ -70,39 +96,4 @@ class ConstantProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
-
-    ###*
-     * @inheritdoc
-    ###
-    getHoverSelectorFromEvent: (event) ->
-        return @getClassSelectorFromEvent(event)
-
-    ###*
-     * @inheritdoc
-    ###
-    getClickSelectorFromEvent: (event) ->
-        return @getClassSelectorFromEvent(event)
-
-    ###*
-     * Gets the correct selector for the constant that is part of the specified event.
-     *
-     * @param {jQuery.Event} event A jQuery event.
-     *
-     * @return {object|null} A selector to be used with jQuery.
-    ###
-    getClassSelectorFromEvent: (event) ->
-        selector = event.currentTarget
-
-        $ = require 'jquery'
-
-        if $(selector).prev().hasClass('namespace') && $(selector).hasClass('constant')
-            return $([$(selector).prev()[0], selector])
-
-        if $(selector).next().hasClass('constant') && $(selector).hasClass('namespace')
-            return $([selector, $(selector).next()[0]])
-
-        if not $(selector).hasClass('constant')
-            return null
-
-        return $(selector)
+        @getInfoFor(text).then(successHandler, failureHandler)

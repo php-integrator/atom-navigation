@@ -1,3 +1,5 @@
+{Point, Range} = require 'atom'
+
 module.exports =
 
 ##*
@@ -29,33 +31,9 @@ class AbstractProvider
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
      *
-     * @return {Array}
-    ###
-    getClassListForBufferPosition: (editor, bufferPosition) ->
-        scopesArray = editor.scopeDescriptorForBufferPosition(bufferPosition).getScopesArray()
-
-        return [] if not scopesArray?
-
-        classes = scopesArray.pop()
-
-        return [] if not classes?
-
-        return classes.split('.')
-
-    ###*
-     * @param {TextEditor} editor
-     * @param {Point}      bufferPosition
-     *
      * @return {boolean}
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        throw new Error("This method is abstract and must be implemented!")
-
-    ###*
-     * @param {TextEditor} editor
-     * @param {Point}      bufferPosition
-    ###
-    getRangeForBufferPosition: (editor, bufferPosition) ->
         throw new Error("This method is abstract and must be implemented!")
 
     ###*
@@ -75,6 +53,44 @@ class AbstractProvider
     ###
     handleSpecificNavigation: (editor, range, text) ->
         throw new Error("This method is abstract and must be implemented!")
+
+    ###*
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
+     * @param {Number}     climbCount
+     *
+     * @return {Array}
+    ###
+    getClassListForBufferPosition: (editor, bufferPosition, climbCount = 1) ->
+        scopesArray = editor.scopeDescriptorForBufferPosition(bufferPosition).getScopesArray()
+
+        return [] if not scopesArray?
+        return [] if climbCount > scopesArray.length
+
+        classes = scopesArray[scopesArray.length - climbCount]
+
+        return [] if not classes?
+
+        return classes.split('.')
+
+    ###*
+     * Skips the scope descriptor at the specified location, returning the class list of the next one.
+     *
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
+     *
+     * @return {Array}
+    ###
+    getClassListFollowingBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+
+        ++range.end.column
+
+        classList = @getClassListForBufferPosition(editor, range.end)
+
+        return classList
 
     ###*
      * @param {String} name
