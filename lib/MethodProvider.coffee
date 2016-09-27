@@ -11,14 +11,30 @@ class MethodProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    eventSelectors: '.function-call.object, .function-call.static'
+    canProvideForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        return true if 'function-call' in classList and ('object' in classList or 'static' in classList)
+
+        return false
+
+    ###*
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
+    ###
+    getRangeForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+
+        return range
 
     ###*
      * Convenience method that returns information for the specified term.
      *
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
-     * @param {string}     term
+     * @param {String}     term
      *
      * @return {Promise}
     ###
@@ -40,7 +56,7 @@ class MethodProvider extends AbstractProvider
      *
      * @param {TextEditor} editor         The text editor to use.
      * @param {Point}      bufferPosition The cursor location of the member.
-     * @param {string}     name           The name of the member to retrieve information about.
+     * @param {String}     name           The name of the member to retrieve information about.
      *
      * @return {Promise}
     ###
@@ -65,8 +81,8 @@ class MethodProvider extends AbstractProvider
     ###*
      * Retrieves information about the specified method of the specified class.
      *
-     * @param {string} className The full name of the class to examine.
-     * @param {string} name      The name of the method to retrieve information about.
+     * @param {String} className The full name of the class to examine.
+     * @param {String} name      The name of the method to retrieve information about.
      *
      * @return {Promise}
     ###
@@ -83,19 +99,7 @@ class MethodProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    isValid: (editor, bufferPosition, term) ->
-        successHandler = (info) =>
-            return if info then true else false
-
-        failureHandler = () ->
-            return false
-
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
-
-    ###*
-     * @inheritdoc
-    ###
-    gotoFromWord: (editor, bufferPosition, term) ->
+    handleSpecificNavigation: (editor, range, text) ->
         successHandler = (info) =>
             return if not info?
 
@@ -111,7 +115,7 @@ class MethodProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
+        @getInfoFor(editor, range.start, text).then(successHandler, failureHandler)
 
     ###*
      * @example When querying "$this->test()", using a position inside 'test' will return true.
