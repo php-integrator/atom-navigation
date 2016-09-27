@@ -30,7 +30,7 @@ class ClassConstantProvider extends AbstractProvider
     ###*
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
-     * @param {string}     text
+     * @param {String}     text
      *
      * @return {Promise}
     ###
@@ -54,7 +54,7 @@ class ClassConstantProvider extends AbstractProvider
      *
      * @param {TextEditor} editor         The text editor to use.
      * @param {Point}      bufferPosition The cursor location of the member.
-     * @param {string}     name           The name of the member to retrieve information about.
+     * @param {String}     name           The name of the member to retrieve information about.
      *
      * @return {Promise}
     ###
@@ -75,8 +75,8 @@ class ClassConstantProvider extends AbstractProvider
     ###*
      * Retrieves information about the specified constant of the specified class.
      *
-     * @param {string} className The full name of the class to examine.
-     * @param {string} name      The name of the constant to retrieve information about.
+     * @param {String} className The full name of the class to examine.
+     * @param {String} name      The name of the constant to retrieve information about.
      *
      * @return {Promise}
     ###
