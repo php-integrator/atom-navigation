@@ -8,6 +8,8 @@ This package provides code navigation for your PHP source code using [PHP Integr
 
 **Note that the [php-integrator-base](https://github.com/php-integrator/atom-base) package is required and needs to be set up correctly for this package to function correctly.**
 
+**Note that the [hyperclick](https://github.com/facebooknuclide/hyperclick) package is also required.
+
 What is included?
   * Navigate to the definition of your global PHP constants and functions.
   * Navigate to the PHP documentation of built-in classes and functions by alt-clicking them.
