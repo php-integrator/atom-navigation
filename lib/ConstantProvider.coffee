@@ -23,7 +23,9 @@ class ConstantProvider extends AbstractProvider
      * @inheritdoc
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        range = super(editor, bufferPosition)
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
 
         classList = @getClassListForBufferPosition(editor, bufferPosition)
 
@@ -60,7 +62,7 @@ class ConstantProvider extends AbstractProvider
                 range = range.union(constantRange)
 
         return range
-        
+
     ###*
      * @param {String} text
      *
