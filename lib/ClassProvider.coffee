@@ -32,9 +32,10 @@ class ClassProvider extends AbstractProvider
         return true if 'namespace' in classList and 'use' in classList
         return true if 'phpdoc' in classList
 
-        classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition)
+        if 'namespace' in classList
+            classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition)
 
-        return true if 'namespace' in classList and ('class' in classListFollowingBufferPosition or 'inherited-class' in classListFollowingBufferPosition)
+            return true if ('class' in classListFollowingBufferPosition and 'support' in classListFollowingBufferPosition) or 'inherited-class' in classListFollowingBufferPosition
 
         return false
 
@@ -66,17 +67,14 @@ class ClassProvider extends AbstractProvider
 
         if ('class' in classList and 'support' in classList) or 'inherited-class' in classList
             prefixRange = new Range(
-                new Point(range.start.row, range.start.column - 2),
+                new Point(range.start.row, range.start.column - 1),
                 new Point(range.start.row, range.start.column - 0)
             )
 
-            # Expand the range to include the namespace prefix, if present. We use two positions before the constant as
-            # the slash itself sometimes has a "punctuation" class instead of a "namespace" class or, if it is alone, no
-            # class at all.
             prefixText = editor.getTextInBufferRange(prefixRange)
 
-            if prefixText.endsWith("\\")
-                prefixClassList = @getClassListForBufferPosition(editor, prefixRange.start)
+            if prefixText == "\\"
+                prefixClassList = @getClassListForBufferPosition(editor, prefixRange.start, 2)
 
                 if "namespace" in prefixClassList
                     namespaceRange = editor.bufferRangeForScopeAtPosition(prefixClassList.join('.'), prefixRange.start)
@@ -85,7 +83,8 @@ class ClassProvider extends AbstractProvider
                     namespaceRange = range
                     namespaceRange.start.column--
 
-                range = namespaceRange.union(range)
+                if namespaceRange?
+                    range = namespaceRange.union(range)
 
         else if 'namespace' in classList
             suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition)
@@ -94,7 +93,8 @@ class ClassProvider extends AbstractProvider
             if ('class' in suffixClassList and 'support' in suffixClassList) or 'inherited-class' in suffixClassList
                 constantRange = editor.bufferRangeForScopeAtPosition(suffixClassList.join('.'), new Point(range.end.row, range.end.column + 1))
 
-                range = range.union(constantRange)
+                if constantRange?
+                    range = range.union(constantRange)
 
         else if 'phpdoc' in classList
             # Docblocks are seen as one entire region of text as they don't have syntax highlighting. Use regular
