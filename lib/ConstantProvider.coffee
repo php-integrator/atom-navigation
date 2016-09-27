@@ -27,8 +27,6 @@ class ConstantProvider extends AbstractProvider
 
         range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
 
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
-
         if 'constant' in classList
             prefixRange = new Range(
                 new Point(range.start.row, range.start.column - 2),
