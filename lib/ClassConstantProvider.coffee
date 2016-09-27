@@ -9,18 +9,32 @@ class ClassConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    eventSelectors: '.constant.other.class'
+    canProvideForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        return true if 'other' in classList and 'class' in classList
+
+        return false
 
     ###*
-     * Convenience method that returns information for the specified term.
-     *
      * @param {TextEditor} editor
      * @param {Point}      bufferPosition
-     * @param {string}     term
+    ###
+    getRangeForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+
+        return range
+
+    ###*
+     * @param {TextEditor} editor
+     * @param {Point}      bufferPosition
+     * @param {string}     text
      *
      * @return {Promise}
     ###
-    getInfoFor: (editor, bufferPosition, term) ->
+    getInfoFor: (editor, bufferPosition, text) ->
         successHandler = (members) =>
             return null unless members.length > 0
 
@@ -33,7 +47,7 @@ class ClassConstantProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        return @getClassConstantsAt(editor, bufferPosition, term).then(successHandler, failureHandler)
+        return @getClassConstantsAt(editor, bufferPosition, text).then(successHandler, failureHandler)
 
     ###*
      * Returns the class constants used at the specified location.
@@ -79,19 +93,7 @@ class ClassConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    isValid: (editor, bufferPosition, term) ->
-        successHandler = (info) =>
-            return if info then true else false
-
-        failureHandler = () ->
-            return false
-
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
-
-    ###*
-     * @inheritdoc
-    ###
-    gotoFromWord: (editor, bufferPosition, term) ->
+    handleSpecificNavigation: (editor, range, text) ->
         successHandler = (info) =>
             return if not info?
 
@@ -103,4 +105,4 @@ class ClassConstantProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
+        @getInfoFor(editor, range.start, text).then(successHandler, failureHandler)

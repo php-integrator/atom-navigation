@@ -127,7 +127,7 @@ module.exports =
             # @hyperclickProviderDispatcher.addProvider(new MethodProvider(configuration))
             # @hyperclickProviderDispatcher.addProvider(new PropertyProvider(configuration))
             @hyperclickProviderDispatcher.addProvider(new FunctionProvider(configuration))
-            # @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider(configuration))
+            @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider(configuration))
             @hyperclickProviderDispatcher.addProvider(new ConstantProvider(configuration))
 
             # for provider in @providers
