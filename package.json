@@ -15,9 +15,15 @@
       }
     }
   },
+  "providedServices": {
+    "hyperclick.provider": {
+      "versions": {
+        "0.0.0": "getHyperclickProvider"
+      }
+    }
+  },
   "dependencies": {
-    "jquery": "~2.1.4",
-    "sub-atom": "~1.0.0"
+    "jquery": "~2.1.4"
   },
   "keywords": [
     "php",

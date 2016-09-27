@@ -11,25 +11,38 @@ class FunctionProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    eventSelectors: '.function-call:not(.object):not(.static), .support.function'
+    canProvideForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        if 'function' in classList or ('function-call' in classList and 'object' not in classList and 'static' not in classList)
+            return true
+
+        return false
+
 
     ###*
-     * Convenience method that returns information for the specified term.
-     *
-     * @param {TextEditor} editor
-     * @param {Point}      bufferPosition
-     * @param {string}     term
+     * @inheritdoc
+    ###
+    getRangeForBufferPosition: (editor, bufferPosition) ->
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
+
+        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+
+        return range
+
+    ###*
+     * @param {String} text
      *
      * @return {Promise}
     ###
-    getInfoFor: (editor, bufferPosition, term) ->
+    getInfoFor: (text) ->
         successHandler = (functions) =>
-            if term?[0] != '\\'
-                term = '\\' + term
+            if text?[0] != '\\'
+                text = '\\' + text
 
-            return null unless functions and term of functions
+            return null unless functions and text of functions
 
-            return functions[term]
+            return functions[text]
 
         failureHandler = () ->
             # Do nothing.
@@ -39,19 +52,7 @@ class FunctionProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    isValid: (editor, bufferPosition, term) ->
-        successHandler = (info) =>
-            return if info then true else false
-
-        failureHandler = () ->
-            return false
-
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
-
-    ###*
-     * @inheritdoc
-    ###
-    gotoFromWord: (editor, bufferPosition, term) ->
+    handleSpecificNavigation: (editor, range, text) ->
         successHandler = (info) =>
             return if not info?
 
@@ -67,4 +68,4 @@ class FunctionProvider extends AbstractProvider
         failureHandler = () ->
             # Do nothing.
 
-        @getInfoFor(editor, bufferPosition, term).then(successHandler, failureHandler)
+        @getInfoFor(text).then(successHandler, failureHandler)
