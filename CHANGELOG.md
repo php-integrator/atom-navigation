@@ -1,5 +1,10 @@
 ## 1.1.0 (base 1.3.0)
-* Update to use the most recent version of the base service.
+### Features and enhancements
+* Hyperclick is now used as back end, which allowed a lot of code to be replaced with a single, consistent, implementation.
+* The `ClassProvider` will no longer continuously scan the entire buffer, creating markers in the buffer to properly handle comment ranges. Instead, this scanning is performed only when trying to navigate to something inside a comment block.
+** This should improve editor responsiveness, during editing as well as when starting Atom.
+
+### Bugs fixed
 * Fix navigation to qualified global constants with namespace prefix not working.
 * Fix navigation to qualified global functions with namespace prefix not working.
 * Fix not being able to navigate to the PHP documentation for built-in classes with longer FQCN's, such as classes from MongoDB.
