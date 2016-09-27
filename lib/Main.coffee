@@ -63,16 +63,6 @@ module.exports =
      * Deactivates the package.
     ###
     deactivate: () ->
-        # @deactivateProviders()
-
-    ###*
-     * Deactivates any active providers.
-    ###
-    # deactivateProviders: () ->
-    #     for provider in @providers
-    #         provider.deactivate()
-    #
-    #     @providers = []
 
     ###*
      * Sets the php-integrator service.
@@ -80,18 +70,10 @@ module.exports =
      * @param {mixed} service
     ###
     setService: (service) ->
-        # @activateProviders(service)
-
         @getHyperclickProvider().setService(service)
 
-        # TODO: Clean up docblocks, refactor.
         # TODO: Clean up dependencies, no longer need SubAtom and probably jQuery either.
         # TODO: Might want to install hyperclick automatically via atom-package-dependencies.
-        # TODO: Test package deactivation and reactivation. PHP hyperclick should not be working if deactivated.
-
-        # {Disposable} = require 'atom'
-
-        # return new Disposable => @deactivateProviders()
 
     ###*
      * @return {AtomConfig}
@@ -129,9 +111,6 @@ module.exports =
             @hyperclickProviderDispatcher.addProvider(new FunctionProvider(configuration))
             @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider(configuration))
             @hyperclickProviderDispatcher.addProvider(new ConstantProvider(configuration))
-
-            # for provider in @providers
-                # provider.activate(service)
 
         return @hyperclickProviderDispatcher
 
