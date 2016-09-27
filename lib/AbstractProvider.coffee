@@ -86,6 +86,8 @@ class AbstractProvider
 
         range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
 
+        return [] if not range?
+
         ++range.end.column
 
         classList = @getClassListForBufferPosition(editor, range.end)
