@@ -7,7 +7,7 @@
     * In the master branch of hyperclick, they've already added support for this, however.
     * The default is now the control key, hyperclick fixes the issue where it created an additional cursor.
 * The `ClassProvider` will no longer continuously scan the entire buffer, creating markers in the buffer to properly handle comment ranges. Instead, this scanning is performed only when trying to navigate to something inside a comment block.
-** This should improve editor responsiveness, during editing as well as when starting Atom.
+  * This should improve editor responsiveness, during editing as well as when starting Atom.
 
 ### Bugs fixed
 * Fix navigation to qualified global constants with namespace prefix not working.
