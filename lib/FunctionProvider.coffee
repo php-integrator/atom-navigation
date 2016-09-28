@@ -70,7 +70,7 @@ class FunctionProvider extends AbstractProvider
                 })
 
             else
-                shell.openExternal(@config.get('php_documentation_base_urls').functions + info.name)
+                shell.openExternal(@service.getDocumentationUrlForFunction(info.name))
 
         failureHandler = () ->
             # Do nothing.

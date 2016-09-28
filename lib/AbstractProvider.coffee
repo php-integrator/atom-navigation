@@ -12,16 +12,6 @@ class AbstractProvider
     service: null
 
     ###*
-     * @var {Object}
-    ###
-    config: null
-
-    ###*
-     * @param {Config} config
-    ###
-    constructor: (@config) ->
-
-    ###*
      * @param {Object} service
     ###
     setService: (service) ->
@@ -93,19 +83,3 @@ class AbstractProvider
         classList = @getClassListForBufferPosition(editor, range.end)
 
         return classList
-
-    ###*
-     * @param {String} name
-     *
-     * @return {String}
-    ###
-    getNormalizeFqcnDocumentationUrl: (name) ->
-        return name.replace(/\\/g, '-').substr(1).toLowerCase()
-
-    ###*
-     * @param {String} name
-     *
-     * @return {String}
-    ###
-    getNormalizeMethodDocumentationUrl: (name) ->
-        return name.replace(/^__/, '')

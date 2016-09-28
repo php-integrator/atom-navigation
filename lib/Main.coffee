@@ -1,29 +1,10 @@
 module.exports =
     ###*
-     * Configuration settings.
-     *
-     * @var {Object}
-    ###
-    config:
-        # navigationRequireAltKey:
-        #     title       : 'Use the alt key for navigation'
-        #     description : 'If set, the alt key will need to be held down in combination with a mouse click for
-        #                    navigating. This stacks with the other modifiers.'
-        #     type        : 'boolean'
-        #     default     : true
-        #     order       : 1
-
-    ###*
      * The name of the package.
      *
      * @var {String}
     ###
     packageName: 'php-integrator-navigation'
-
-    ###*
-     * @var {AtomConfig}
-    ###
-    atomConfig: null
 
     ###*
     * @var {HyperclickProviderDispatcher}
@@ -51,17 +32,6 @@ module.exports =
         @getHyperclickProvider().setService(service)
 
     ###*
-     * @return {AtomConfig}
-    ###
-    getAtomConfig: () ->
-        if not @atomConfig
-            AtomConfig = require './AtomConfig'
-
-            @atomConfig = new AtomConfig(@packageName)
-
-        return @atomConfig
-
-    ###*
      * @return {HyperclickProviderDispatcher}
     ###
     getHyperclickProviderDispatcher: () ->
@@ -77,14 +47,12 @@ module.exports =
             ConstantProvider      = require './ConstantProvider'
             ClassConstantProvider = require './ClassConstantProvider'
 
-            configuration = @getAtomConfig()
-
-            @hyperclickProviderDispatcher.addProvider(new ClassProvider(configuration))
-            @hyperclickProviderDispatcher.addProvider(new MethodProvider(configuration))
-            @hyperclickProviderDispatcher.addProvider(new PropertyProvider(configuration))
-            @hyperclickProviderDispatcher.addProvider(new FunctionProvider(configuration))
-            @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider(configuration))
-            @hyperclickProviderDispatcher.addProvider(new ConstantProvider(configuration))
+            @hyperclickProviderDispatcher.addProvider(new ClassProvider())
+            @hyperclickProviderDispatcher.addProvider(new MethodProvider())
+            @hyperclickProviderDispatcher.addProvider(new PropertyProvider())
+            @hyperclickProviderDispatcher.addProvider(new FunctionProvider())
+            @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider())
+            @hyperclickProviderDispatcher.addProvider(new ConstantProvider())
 
         return @hyperclickProviderDispatcher
 
