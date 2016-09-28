@@ -23,23 +23,11 @@ class AtomConfig extends Config
      * @inheritdoc
     ###
     load: () ->
-        @set('navigationRequireAltKey', atom.config.get("#{@packageName}.navigationRequireAltKey"))
-        @set('navigationRequireMetaKey', atom.config.get("#{@packageName}.navigationRequireMetaKey"))
-        @set('navigationRequireCtrlKey', atom.config.get("#{@packageName}.navigationRequireCtrlKey"))
-        @set('navigationRequireShiftKey', atom.config.get("#{@packageName}.navigationRequireShiftKey"))
+        # @set('navigationRequireAltKey', atom.config.get("#{@packageName}.navigationRequireAltKey"))
 
     ###*
      * Attaches listeners to listen to Atom configuration changes.
     ###
     attachListeners: () ->
-        atom.config.onDidChange "#{@packageName}.navigationRequireAltKey", () =>
-            @set('navigationRequireAltKey', atom.config.get("#{@packageName}.navigationRequireAltKey"))
-
-        atom.config.onDidChange "#{@packageName}.navigationRequireMetaKey", () =>
-            @set('navigationRequireMetaKey', atom.config.get("#{@packageName}.navigationRequireMetaKey"))
-
-        atom.config.onDidChange "#{@packageName}.navigationRequireCtrlKey", () =>
-            @set('navigationRequireCtrlKey', atom.config.get("#{@packageName}.navigationRequireCtrlKey"))
-
-        atom.config.onDidChange "#{@packageName}.navigationRequireShiftKey", () =>
-            @set('navigationRequireShiftKey', atom.config.get("#{@packageName}.navigationRequireShiftKey"))
+        # atom.config.onDidChange "#{@packageName}.navigationRequireAltKey", () =>
+        #     @set('navigationRequireAltKey', atom.config.get("#{@packageName}.navigationRequireAltKey"))

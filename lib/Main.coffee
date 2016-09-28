@@ -5,37 +5,13 @@ module.exports =
      * @var {Object}
     ###
     config:
-        navigationRequireAltKey:
-            title       : 'Use the alt key for navigation'
-            description : 'If set, the alt key will need to be held down in combination with a mouse click for
-                           navigating. This stacks with the other modifiers.'
-            type        : 'boolean'
-            default     : true
-            order       : 1
-
-        navigationRequireMetaKey:
-            title       : 'Use the meta key for navigation'
-            description : 'If set, the meta key will need to be held down in combination with a mouse click for
-                           navigating. This stacks with the other modifiers.'
-            type        : 'boolean'
-            default     : false
-            order       : 2
-
-        navigationRequireCtrlKey:
-            title       : 'Use the ctrl key for navigation'
-            description : 'If set, the ctrl key will need to be held down in combination with a mouse click for
-                           navigating. This stacks with the other modifiers.'
-            type        : 'boolean'
-            default     : false
-            order       : 3
-
-        navigationRequireShiftKey:
-            title       : 'Use the shift key for navigation'
-            description : 'If set, the shift key will need to be held down in combination with a mouse click for
-                           navigating. This stacks with the other modifiers.'
-            type        : 'boolean'
-            default     : false
-            order       : 4
+        # navigationRequireAltKey:
+        #     title       : 'Use the alt key for navigation'
+        #     description : 'If set, the alt key will need to be held down in combination with a mouse click for
+        #                    navigating. This stacks with the other modifiers.'
+        #     type        : 'boolean'
+        #     default     : true
+        #     order       : 1
 
     ###*
      * The name of the package.
