@@ -3,9 +3,8 @@
 * The dependency on SubAtom and jQuery has been removed.
 * Hyperclick is now used as back end, which allowed a lot of code to be replaced with a single, consistent, implementation.
   * You can now attach a shortcut to navigation (see also hyperclick's settings).
-  * It may be the case that you can no longer modify the modifier key for navigatin with the mouse.
-    * In the master branch of hyperclick, they've already added support for this, however.
-    * The default is now the control key, hyperclick fixes the issue where it created an additional cursor.
+  * The default modifier key is now the control key, hyperclick fixes the issue where it created an additional cursor.
+    * You can modify the modifier key via hyperlick's settings. Support for this was added in version 0.0.39.
 * The `ClassProvider` will no longer continuously scan the entire buffer, creating markers in the buffer to properly handle comment ranges. Instead, this scanning is performed only when trying to navigate to something inside a comment block.
   * This should improve editor responsiveness, during editing as well as when starting Atom.
 
