@@ -17,6 +17,18 @@ class ConstantProvider extends AbstractProvider
         return true if 'constant'  in classList and 'class' not in classList
         return true if 'namespace' in classList and 'constant' in @getClassListFollowingBufferPosition(editor, bufferPosition)
 
+        if 'punctuation' in classList
+            originalClassList = classList
+            classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+
+            if 'namespace' in classList
+                climbCount = 1
+
+                if 'punctuation' in originalClassList
+                    climbCount = 2
+
+                return true if 'constant' in @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
+
         return false
 
     ###*
@@ -25,7 +37,12 @@ class ConstantProvider extends AbstractProvider
     getRangeForBufferPosition: (editor, bufferPosition) ->
         classList = @getClassListForBufferPosition(editor, bufferPosition)
 
-        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+        originalClassList = classList
+
+        if 'punctuation' in classList
+            classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+
+        range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 0)
 
         if 'constant' in classList
             prefixRange = new Range(
@@ -42,7 +59,7 @@ class ConstantProvider extends AbstractProvider
                 prefixClassList = @getClassListForBufferPosition(editor, prefixRange.start)
 
                 if "namespace" in prefixClassList
-                    namespaceRange = editor.bufferRangeForScopeAtPosition(prefixClassList.join('.'), prefixRange.start)
+                    namespaceRange = @getBufferRangeForClassListAtPosition(editor, prefixClassList, prefixRange.start, 0)
 
                 else
                     namespaceRange = range
@@ -51,13 +68,21 @@ class ConstantProvider extends AbstractProvider
                 range = namespaceRange.union(range)
 
         else if 'namespace' in classList
-            suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+            climbCount = 1
+
+            if 'punctuation' in originalClassList
+                climbCount = 2
+
+            suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
 
             # Expand the range to include the constant name, if present.
             if 'constant' in suffixClassList
-                constantRange = editor.bufferRangeForScopeAtPosition(suffixClassList.join('.'), new Point(range.end.row, range.end.column + 1))
+                constantRange = @getBufferRangeForClassListAtPosition(editor, suffixClassList, new Point(range.end.row, range.end.column + 1))
 
                 range = range.union(constantRange)
+
+        else
+            return null
 
         return range
 
