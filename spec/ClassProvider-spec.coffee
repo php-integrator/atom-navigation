@@ -54,3 +54,34 @@ describe "ClassProvider", ->
 
             expect(range.end.row).toEqual(line)
             expect(range.end.column).toEqual(endColumn + 1)
+
+    it "returns the correct results for built-in class names", ->
+        source =
+            '''
+            <?php
+
+            $test = new \\LogicException();
+            '''
+
+        editor.setText(source)
+
+        line = 2
+        startColumn = 12
+        endColumn = 26
+
+        for i in [startColumn .. endColumn]
+            point = new Point(line, i)
+
+            canProvide = provider.canProvideForBufferPosition(editor, point)
+
+            expect(canProvide).toBeTruthy()
+
+            range = provider.getRangeForBufferPosition(editor, point)
+
+            expect(range).toBeTruthy()
+
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
+
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
