@@ -23,8 +23,12 @@ class ClassProvider extends AbstractProvider
     canProvideForBufferPosition: (editor, bufferPosition) ->
         classList = @getClassListForBufferPosition(editor, bufferPosition)
 
+        climbCount = 1
+
         if 'punctuation' in classList and 'inheritance' in classList
             classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+
+            climbCount = 2
 
         return true if 'class' in classList and 'support' in classList
         return true if 'inherited-class' in classList
@@ -32,7 +36,7 @@ class ClassProvider extends AbstractProvider
         return true if 'phpdoc' in classList
 
         if 'namespace' in classList
-            classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition)
+            classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
 
             return true if ('class' in classListFollowingBufferPosition and 'support' in classListFollowingBufferPosition) or 'inherited-class' in classListFollowingBufferPosition
 
@@ -45,7 +49,14 @@ class ClassProvider extends AbstractProvider
     getRangeForBufferPosition: (editor, bufferPosition) ->
         classList = @getClassListForBufferPosition(editor, bufferPosition)
 
-        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+        climbCount = 1
+
+        if 'punctuation' in classList and 'inheritance' in classList
+            classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+
+            climbCount = 2
+
+        range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 0)
 
         # Atom's consistency regarding the namespace separator splitting a namespace prefix and an actual class name
         # leaves something to be desired: sometimes it's part of the namespace, other times it's in its own class,
@@ -60,7 +71,7 @@ class ClassProvider extends AbstractProvider
             if 'punctuation' in classList and 'inheritance' in classList
                 classList = @getClassListForBufferPosition(editor, newBufferPosition, 2)
 
-            range = editor.bufferRangeForScopeAtPosition(classList.join('.'), newBufferPosition)
+            range = @getBufferRangeForClassListAtPosition(editor, classList, newBufferPosition)
 
             ++bufferPosition.column
 
@@ -76,7 +87,7 @@ class ClassProvider extends AbstractProvider
                 prefixClassList = @getClassListForBufferPosition(editor, prefixRange.start, 2)
 
                 if "namespace" in prefixClassList
-                    namespaceRange = editor.bufferRangeForScopeAtPosition(prefixClassList.join('.'), prefixRange.start)
+                    namespaceRange = @getBufferRangeForClassListAtPosition(editor, prefixClassList, prefixRange.start, 0)
 
                 else
                     namespaceRange = range
@@ -86,14 +97,14 @@ class ClassProvider extends AbstractProvider
                     range = namespaceRange.union(range)
 
         else if 'namespace' in classList
-            suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+            suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
 
             # Expand the range to include the constant name, if present.
             if ('class' in suffixClassList and 'support' in suffixClassList) or 'inherited-class' in suffixClassList
-                constantRange = editor.bufferRangeForScopeAtPosition(suffixClassList.join('.'), new Point(range.end.row, range.end.column + 1))
+                classNameRange = @getBufferRangeForClassListAtPosition(editor, suffixClassList, new Point(range.end.row, range.end.column + 1))
 
-                if constantRange?
-                    range = range.union(constantRange)
+                if classNameRange?
+                    range = range.union(classNameRange)
 
         else if 'phpdoc' in classList
             # Docblocks are seen as one entire region of text as they don't have syntax highlighting. Use regular
