@@ -49,10 +49,10 @@ describe "ConstantProvider", ->
 
             expect(range).toBeTruthy()
 
-            expect(range.start.row).toEqual(2)
-            expect(range.start.column).toEqual(8)
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
 
-            expect(range.end.row).toEqual(2)
-            expect(range.end.column).toEqual(34)
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
 
         lines = editor.getLineCount()
