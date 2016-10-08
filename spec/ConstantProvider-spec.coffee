@@ -24,7 +24,7 @@ describe "ConstantProvider", ->
         runs ->
             editor.setGrammar(grammar)
 
-    it "gives different results from an actual Atom window?", ->
+    it "returns the correct results", ->
         source =
             '''
             <?php
