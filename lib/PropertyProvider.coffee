@@ -13,6 +13,7 @@ class PropertyProvider extends AbstractProvider
         classList = @getClassListForBufferPosition(editor, bufferPosition)
 
         return true if 'property' in classList
+        return true if 'variable' in classList and 'other' in classList and 'class' in classList
 
         return false
 
