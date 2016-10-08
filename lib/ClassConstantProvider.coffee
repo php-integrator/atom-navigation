@@ -23,7 +23,7 @@ class ClassConstantProvider extends AbstractProvider
     getRangeForBufferPosition: (editor, bufferPosition) ->
         classList = @getClassListForBufferPosition(editor, bufferPosition)
 
-        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+        range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
 
         return range
 
