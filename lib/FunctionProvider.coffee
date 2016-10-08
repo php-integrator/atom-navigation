@@ -1,5 +1,7 @@
 shell = require 'shell'
 
+{Point, Range} = require 'atom'
+
 AbstractProvider = require './AbstractProvider'
 
 module.exports =
@@ -12,14 +14,17 @@ class FunctionProvider extends AbstractProvider
      * @inheritdoc
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+        range = @getBufferRangeForClassListAtPosition(editor, ['meta', 'function-call', 'php'], bufferPosition, 0)
 
-        return true if 'function-call' in classList and 'object' not in classList and 'static' not in classList
+        return true if range?
 
-        classList = @getClassListForBufferPosition(editor, bufferPosition, 1)
+        classList = @getClassListForBufferPosition(editor, bufferPosition)
 
-        return true if 'function' in classList
-        return true if 'function-call' in classList and 'object' not in classList and 'static' not in classList
+        return true if 'support' in classList and 'function' in classList
+
+        classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition)
+
+        return true if 'punctuation' in classList and 'support' in classListFollowingBufferPosition and 'function' in classListFollowingBufferPosition
 
         return false
 
@@ -28,12 +33,36 @@ class FunctionProvider extends AbstractProvider
      * @param {Point}      bufferPosition
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+        range = @getBufferRangeForClassListAtPosition(editor, ['meta', 'function-call', 'php'], bufferPosition, 0)
 
-        if 'function-call' not in classList
-            classList = @getClassListForBufferPosition(editor, bufferPosition, 1)
+        if not range?
+            # Built-in function.
+            classList = @getClassListForBufferPosition(editor, bufferPosition)
 
-        range = editor.bufferRangeForScopeAtPosition(classList.join('.'), bufferPosition)
+            range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
+
+            if 'punctuation' in classList
+                # Include the function call after the leading slash.
+                positionAfterBufferPosition = bufferPosition.copy()
+                positionAfterBufferPosition.column++
+
+                classList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+
+                functionCallRange = @getBufferRangeForClassListAtPosition(editor, classList, positionAfterBufferPosition)
+
+                range = range.union(functionCallRange)
+
+            else # .support.function.*.php
+                # Include a leading slash, if any.
+                prefixRange = new Range(
+                    new Point(range.start.row, range.start.column - 1),
+                    new Point(range.start.row, range.start.column - 0)
+                )
+
+                prefixText = editor.getTextInBufferRange(prefixRange)
+
+                if prefixText == '\\'
+                    range.start.column--
 
         return range
 
