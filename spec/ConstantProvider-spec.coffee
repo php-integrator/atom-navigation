@@ -54,5 +54,3 @@ describe "ConstantProvider", ->
 
             expect(range.end.row).toEqual(line)
             expect(range.end.column).toEqual(endColumn + 1)
-
-        lines = editor.getLineCount()
