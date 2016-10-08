@@ -153,3 +153,224 @@ describe "ClassProvider", ->
 
             expect(range.end.row).toEqual(line)
             expect(range.end.column).toEqual(endColumn + 1)
+
+    it "returns the correct results for class names after use statements", ->
+        source =
+            '''
+            <?php
+
+            use \\Some\\Namespace\\SomeClass;
+            '''
+
+        editor.setText(source)
+
+        line = 2
+        startColumn = 4
+        endColumn = 28
+
+        for i in [startColumn .. endColumn]
+            point = new Point(line, i)
+
+            canProvide = provider.canProvideForBufferPosition(editor, point)
+
+            expect(canProvide).toBeTruthy()
+
+            range = provider.getRangeForBufferPosition(editor, point)
+
+            expect(range).toBeTruthy()
+
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
+
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
+
+    it "returns the correct results in docblock @param statements", ->
+        source =
+            '''
+            <?php
+
+            /**
+             * @param \\Some\\Namespace\\SomeClass $foo Description.
+             */
+            '''
+
+        editor.setText(source)
+
+        line = 3
+        startColumn = 10
+        endColumn = 34
+
+        provider.setService({
+            isBasicType: () ->
+                return false
+        })
+
+        for i in [startColumn .. endColumn]
+            point = new Point(line, i)
+
+            canProvide = provider.canProvideForBufferPosition(editor, point)
+
+            expect(canProvide).toBeTruthy()
+
+            range = provider.getRangeForBufferPosition(editor, point)
+
+            expect(range).toBeTruthy()
+
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
+
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
+
+    it "returns the correct results in docblock @var statements", ->
+        source =
+            '''
+            <?php
+
+            /**
+             * @var \\Some\\Namespace\\SomeClass
+             */
+            '''
+
+        editor.setText(source)
+
+        line = 3
+        startColumn = 8
+        endColumn = 32
+
+        provider.setService({
+            isBasicType: () ->
+                return false
+        })
+
+        for i in [startColumn .. endColumn]
+            point = new Point(line, i)
+
+            canProvide = provider.canProvideForBufferPosition(editor, point)
+
+            expect(canProvide).toBeTruthy()
+
+            range = provider.getRangeForBufferPosition(editor, point)
+
+            expect(range).toBeTruthy()
+
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
+
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
+
+    it "returns the correct results in docblock @return statements", ->
+        source =
+            '''
+            <?php
+
+            /**
+             * @return \\Some\\Namespace\\SomeClass as a test.
+             */
+            '''
+
+        editor.setText(source)
+
+        line = 3
+        startColumn = 11
+        endColumn = 35
+
+        provider.setService({
+            isBasicType: () ->
+                return false
+        })
+
+        for i in [startColumn .. endColumn]
+            point = new Point(line, i)
+
+            canProvide = provider.canProvideForBufferPosition(editor, point)
+
+            expect(canProvide).toBeTruthy()
+
+            range = provider.getRangeForBufferPosition(editor, point)
+
+            expect(range).toBeTruthy()
+
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
+
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
+
+    it "returns the correct results in docblock @throws statements", ->
+        source =
+            '''
+            <?php
+
+            /**
+             * @throws \\Some\\Namespace\\SomeClass when something happens.
+             */
+            '''
+
+        editor.setText(source)
+
+        line = 3
+        startColumn = 11
+        endColumn = 35
+
+        provider.setService({
+            isBasicType: () ->
+                return false
+        })
+
+        for i in [startColumn .. endColumn]
+            point = new Point(line, i)
+
+            canProvide = provider.canProvideForBufferPosition(editor, point)
+
+            expect(canProvide).toBeTruthy()
+
+            range = provider.getRangeForBufferPosition(editor, point)
+
+            expect(range).toBeTruthy()
+
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
+
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
+
+    it "returns the correct results in docblock @see statements", ->
+        source =
+            '''
+            <?php
+
+            /**
+             * @see \\Some\\Namespace\\SomeClass
+             */
+            '''
+
+        editor.setText(source)
+
+        line = 3
+        startColumn = 8
+        endColumn = 32
+
+        provider.setService({
+            isBasicType: () ->
+                return false
+        })
+
+        for i in [startColumn .. endColumn]
+            point = new Point(line, i)
+
+            canProvide = provider.canProvideForBufferPosition(editor, point)
+
+            expect(canProvide).toBeTruthy()
+
+            range = provider.getRangeForBufferPosition(editor, point)
+
+            expect(range).toBeTruthy()
+
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
+
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
