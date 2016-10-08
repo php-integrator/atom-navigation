@@ -1,3 +1,5 @@
+{Point, Range} = require 'atom'
+
 AbstractProvider = require './AbstractProvider'
 
 module.exports =
@@ -13,6 +15,11 @@ class PropertyProvider extends AbstractProvider
         classList = @getClassListForBufferPosition(editor, bufferPosition)
 
         return true if 'property' in classList
+
+        # Ensure the dollar sign is also seen as a match
+        if 'punctuation' in classList and 'definition' in classList and 'variable' in classList
+            classList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+
         return true if 'variable' in classList and 'other' in classList and 'class' in classList
 
         return false
@@ -25,6 +32,27 @@ class PropertyProvider extends AbstractProvider
         classList = @getClassListForBufferPosition(editor, bufferPosition)
 
         range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
+
+        if 'punctuation' in classList and 'definition' in classList and 'variable' in classList
+            positionAfterBufferPosition = bufferPosition.copy()
+            positionAfterBufferPosition.column++
+
+            classList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+
+            staticPropertyRange = @getBufferRangeForClassListAtPosition(editor, classList, positionAfterBufferPosition)
+
+            range = range.union(staticPropertyRange)
+
+        else # if it is a static property (but not its leading dollar sign)
+            prefixRange = new Range(
+                new Point(range.start.row, range.start.column - 1),
+                new Point(range.start.row, range.start.column - 0)
+            )
+
+            prefixText = editor.getTextInBufferRange(prefixRange)
+
+            if prefixText == '$'
+                range.start.column--
 
         return range
 
