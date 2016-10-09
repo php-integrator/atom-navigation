@@ -34,6 +34,7 @@ class ClassProvider extends AbstractProvider
         return true if 'inherited-class' in classList
         return true if 'namespace' in classList and 'use' in classList
         return true if 'phpdoc' in classList
+        return true if 'comment' in classList # See also https://github.com/atom/language-php/issues/135
 
         if 'namespace' in classList
             classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
@@ -106,7 +107,7 @@ class ClassProvider extends AbstractProvider
                 if classNameRange?
                     range = range.union(classNameRange)
 
-        else if 'phpdoc' in classList
+        else if 'phpdoc' in classList or 'comment' in classList
             # Docblocks are seen as one entire region of text as they don't have syntax highlighting. Use regular
             # expressions instead to find interesting parts containing class names.
             lineText = editor.lineTextForBufferRow(bufferPosition.row)

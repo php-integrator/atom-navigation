@@ -374,3 +374,39 @@ describe "ClassProvider", ->
 
             expect(range.end.row).toEqual(line)
             expect(range.end.column).toEqual(endColumn + 1)
+
+    it "returns the correct results in singe-line docblock statements ", ->
+        source =
+            '''
+            <?php
+
+            /** @var \\Some\\Namespace\\SomeClass[] */
+            '''
+
+        editor.setText(source)
+
+        line = 2
+        startColumn = 9
+        endColumn = 33
+
+        provider.setService({
+            isBasicType: () ->
+                return false
+        })
+
+        for i in [startColumn .. endColumn]
+            point = new Point(line, i)
+
+            canProvide = provider.canProvideForBufferPosition(editor, point)
+
+            expect(canProvide).toBeTruthy()
+
+            range = provider.getRangeForBufferPosition(editor, point)
+
+            expect(range).toBeTruthy()
+
+            expect(range.start.row).toEqual(line)
+            expect(range.start.column).toEqual(startColumn)
+
+            expect(range.end.row).toEqual(line)
+            expect(range.end.column).toEqual(endColumn + 1)
