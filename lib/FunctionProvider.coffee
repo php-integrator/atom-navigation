@@ -89,19 +89,25 @@ class FunctionProvider extends AbstractProvider
      * @inheritdoc
     ###
     handleSpecificNavigation: (editor, range, text) ->
-        successHandler = (info) =>
-            return if not info?
-
-            if info.filename?
-                atom.workspace.open(info.filename, {
-                    initialLine    : (info.startLine - 1),
-                    searchAllPanes : true
-                })
-
-            else
-                shell.openExternal(@service.getDocumentationUrlForFunction(info.name))
-
         failureHandler = () ->
             # Do nothing.
 
-        @getInfoFor(text).then(successHandler, failureHandler)
+        resolveTypeHandler = (type) =>
+            successHandler = (info) =>
+                return if not info?
+
+                if info.filename?
+                    atom.workspace.open(info.filename, {
+                        initialLine    : (info.startLine - 1),
+                        searchAllPanes : true
+                    })
+
+                else
+                    shell.openExternal(@service.getDocumentationUrlForFunction(info.name))
+
+            return @getInfoFor(type).then(successHandler, failureHandler)
+
+        @service.resolveType(editor.getPath(), range.start.row + 1, text, 'function').then(
+            resolveTypeHandler,
+            failureHandler
+        )
