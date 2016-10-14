@@ -9,10 +9,10 @@
   * This should improve editor responsiveness, during editing as well as when starting Atom.
 
 ### Bugs fixed
-* Fix navigation to qualified global constants with namespace prefix not working.
-* Fix navigation to qualified global functions with namespace prefix not working.
 * Fix navigation to unqualified global constants not working.
 * Fix navigation to unqualified global functions not working.
+* Fix navigation to qualified global constants with namespace prefix not working.
+* Fix navigation to qualified global functions with namespace prefix not working.
 * Fix navigation to global constants imported using use statements not working.
 * Fix navigation to global functions imported using use statements not working.
 * Fix not being able to navigate to the PHP documentation for built-in classes with longer FQCN's, such as classes from MongoDB.
