@@ -109,16 +109,22 @@ class ConstantProvider extends AbstractProvider
     ###*
      * @inheritdoc
     ###
-    handleSpecificNavigation: (editor, bufferPosition, text) ->
-        successHandler = (info) =>
-            return if not info?
-
-            atom.workspace.open(info.filename, {
-                initialLine    : (info.startLine - 1),
-                searchAllPanes : true
-            })
-
+    handleSpecificNavigation: (editor, range, text) ->
         failureHandler = () ->
             # Do nothing.
 
-        @getInfoFor(text).then(successHandler, failureHandler)
+        resolveTypeHandler = (type) =>
+            successHandler = (info) =>
+                return if not info?
+
+                atom.workspace.open(info.filename, {
+                    initialLine    : (info.startLine - 1),
+                    searchAllPanes : true
+                })
+
+            return @getInfoFor(type).then(successHandler, failureHandler)
+
+        @service.resolveType(editor.getPath(), range.start.row + 1, text, 'constant').then(
+            resolveTypeHandler,
+            failureHandler
+        )

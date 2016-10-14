@@ -11,6 +11,8 @@
 ### Bugs fixed
 * Fix navigation to qualified global constants with namespace prefix not working.
 * Fix navigation to qualified global functions with namespace prefix not working.
+* Fix navigation to unqualified global constants not working.
+* Fix navigation to global constants imported using use statements not working.
 * Fix not being able to navigate to the PHP documentation for built-in classes with longer FQCN's, such as classes from MongoDB.
 * Fix not being able to navigate to method names with leading slashes, such as `__toString`, because PHP's URL endpoints are terrifically consistent.
 * Fix built-in classes sometimes navigating to the wrong page, e.g. `DateTime` was navigating to the overview page instead of the class documentation page.
