@@ -21,12 +21,12 @@ class ClassProvider extends AbstractProvider
      * @inheritdoc
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
         climbCount = 1
 
         if 'punctuation' in classList and 'inheritance' in classList
-            classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+            classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition, 2)
 
             climbCount = 2
 
@@ -37,7 +37,7 @@ class ClassProvider extends AbstractProvider
         return true if 'comment' in classList # See also https://github.com/atom/language-php/issues/135
 
         if 'namespace' in classList
-            classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
+            classListFollowingBufferPosition = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
 
             return true if ('class' in classListFollowingBufferPosition and 'support' in classListFollowingBufferPosition) or 'inherited-class' in classListFollowingBufferPosition
 
@@ -48,16 +48,16 @@ class ClassProvider extends AbstractProvider
      * @param {Point}      bufferPosition
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
         climbCount = 1
 
         if 'punctuation' in classList and 'inheritance' in classList
-            classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+            classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition, 2)
 
             climbCount = 2
 
-        range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 0)
+        range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 0)
 
         # Atom's consistency regarding the namespace separator splitting a namespace prefix and an actual class name
         # leaves something to be desired: sometimes it's part of the namespace, other times it's in its own class,
@@ -67,12 +67,12 @@ class ClassProvider extends AbstractProvider
             newBufferPosition = bufferPosition.copy()
             --newBufferPosition.column
 
-            classList = @getClassListForBufferPosition(editor, newBufferPosition)
+            classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, newBufferPosition)
 
             if 'punctuation' in classList and 'inheritance' in classList
-                classList = @getClassListForBufferPosition(editor, newBufferPosition, 2)
+                classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, newBufferPosition, 2)
 
-            range = @getBufferRangeForClassListAtPosition(editor, classList, newBufferPosition)
+            range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, newBufferPosition)
 
             ++bufferPosition.column
 
@@ -85,10 +85,10 @@ class ClassProvider extends AbstractProvider
             prefixText = editor.getTextInBufferRange(prefixRange)
 
             if prefixText == "\\"
-                prefixClassList = @getClassListForBufferPosition(editor, prefixRange.start, 2)
+                prefixClassList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, prefixRange.start, 2)
 
                 if "namespace" in prefixClassList
-                    namespaceRange = @getBufferRangeForClassListAtPosition(editor, prefixClassList, prefixRange.start, 0)
+                    namespaceRange = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, prefixClassList, prefixRange.start, 0)
 
                 else
                     namespaceRange = range
@@ -98,11 +98,11 @@ class ClassProvider extends AbstractProvider
                     range = namespaceRange.union(range)
 
         else if 'namespace' in classList
-            suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
+            suffixClassList = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
 
             # Expand the range to include the constant name, if present.
             if ('class' in suffixClassList and 'support' in suffixClassList) or 'inherited-class' in suffixClassList
-                classNameRange = @getBufferRangeForClassListAtPosition(editor, suffixClassList, new Point(range.end.row, range.end.column + 1))
+                classNameRange = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, suffixClassList, new Point(range.end.row, range.end.column + 1))
 
                 if classNameRange?
                     range = range.union(classNameRange)

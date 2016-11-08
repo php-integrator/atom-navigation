@@ -14,15 +14,15 @@ class FunctionProvider extends AbstractProvider
      * @inheritdoc
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        range = @getBufferRangeForClassListAtPosition(editor, ['meta', 'function-call', 'php'], bufferPosition, 0)
+        range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, ['meta', 'function-call', 'php'], bufferPosition, 0)
 
         return true if range?
 
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
         return true if 'support' in classList and 'function' in classList
 
-        classListFollowingBufferPosition = @getClassListFollowingBufferPosition(editor, bufferPosition)
+        classListFollowingBufferPosition = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition)
 
         return true if 'punctuation' in classList and 'support' in classListFollowingBufferPosition and 'function' in classListFollowingBufferPosition
 
@@ -33,22 +33,22 @@ class FunctionProvider extends AbstractProvider
      * @param {Point}      bufferPosition
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        range = @getBufferRangeForClassListAtPosition(editor, ['meta', 'function-call', 'php'], bufferPosition, 0)
+        range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, ['meta', 'function-call', 'php'], bufferPosition, 0)
 
         if not range?
             # Built-in function.
-            classList = @getClassListForBufferPosition(editor, bufferPosition)
+            classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
-            range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
+            range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
 
             if 'punctuation' in classList
                 # Include the function call after the leading slash.
                 positionAfterBufferPosition = bufferPosition.copy()
                 positionAfterBufferPosition.column++
 
-                classList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+                classList = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition)
 
-                functionCallRange = @getBufferRangeForClassListAtPosition(editor, classList, positionAfterBufferPosition)
+                functionCallRange = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, positionAfterBufferPosition)
 
                 range = range.union(functionCallRange)
 

@@ -12,7 +12,7 @@ class MethodProvider extends AbstractProvider
      * @inheritdoc
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
         return true if 'function-call' in classList and ('object' in classList or 'static' in classList)
 
@@ -23,9 +23,9 @@ class MethodProvider extends AbstractProvider
      * @param {Point}      bufferPosition
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
-        range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
+        range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
 
         return range
 

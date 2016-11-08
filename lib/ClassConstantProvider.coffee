@@ -10,7 +10,7 @@ class ClassConstantProvider extends AbstractProvider
      * @inheritdoc
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
         return true if 'other' in classList and 'class' in classList
 
@@ -21,9 +21,9 @@ class ClassConstantProvider extends AbstractProvider
      * @param {Point}      bufferPosition
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
-        range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
+        range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
 
         return range
 

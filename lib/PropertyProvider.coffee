@@ -12,13 +12,13 @@ class PropertyProvider extends AbstractProvider
      * @inheritdoc
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
         return true if 'property' in classList
 
         # Ensure the dollar sign is also seen as a match
         if 'punctuation' in classList and 'definition' in classList and 'variable' in classList
-            classList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+            classList = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition)
 
         return true if 'variable' in classList and 'other' in classList and 'class' in classList
 
@@ -29,17 +29,17 @@ class PropertyProvider extends AbstractProvider
      * @param {Point}      bufferPosition
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
-        range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
+        range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition)
 
         if 'punctuation' in classList and 'definition' in classList and 'variable' in classList
             positionAfterBufferPosition = bufferPosition.copy()
             positionAfterBufferPosition.column++
 
-            classList = @getClassListFollowingBufferPosition(editor, bufferPosition)
+            classList = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition)
 
-            staticPropertyRange = @getBufferRangeForClassListAtPosition(editor, classList, positionAfterBufferPosition)
+            staticPropertyRange = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, positionAfterBufferPosition)
 
             range = range.union(staticPropertyRange)
 

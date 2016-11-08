@@ -36,9 +36,12 @@ module.exports =
     ###
     getHyperclickProviderDispatcher: () ->
         if not @hyperclickProviderDispatcher
+            ScopeDescriptorHelper = require './ScopeDescriptorHelper'
             HyperclickProviderDispatcher = require './HyperclickProviderDispatcher'
 
             @hyperclickProviderDispatcher = new HyperclickProviderDispatcher()
+
+            scopeDescriptorHelper = new ScopeDescriptorHelper()
 
             ClassProvider         = require './ClassProvider'
             MethodProvider        = require './MethodProvider'
@@ -47,12 +50,12 @@ module.exports =
             ConstantProvider      = require './ConstantProvider'
             ClassConstantProvider = require './ClassConstantProvider'
 
-            @hyperclickProviderDispatcher.addProvider(new ClassProvider())
-            @hyperclickProviderDispatcher.addProvider(new MethodProvider())
-            @hyperclickProviderDispatcher.addProvider(new PropertyProvider())
-            @hyperclickProviderDispatcher.addProvider(new FunctionProvider())
-            @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider())
-            @hyperclickProviderDispatcher.addProvider(new ConstantProvider())
+            @hyperclickProviderDispatcher.addProvider(new ClassProvider(scopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new MethodProvider(scopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new PropertyProvider(scopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new FunctionProvider(scopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider(scopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new ConstantProvider(scopeDescriptorHelper))
 
         return @hyperclickProviderDispatcher
 

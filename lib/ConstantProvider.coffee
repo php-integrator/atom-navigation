@@ -12,14 +12,14 @@ class ConstantProvider extends AbstractProvider
      * @inheritdoc
     ###
     canProvideForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
         return true if 'constant'  in classList and 'class' not in classList
-        return true if 'namespace' in classList and 'constant' in @getClassListFollowingBufferPosition(editor, bufferPosition)
+        return true if 'namespace' in classList and 'constant' in @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition)
 
         if 'punctuation' in classList
             originalClassList = classList
-            classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+            classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition, 2)
 
             if 'namespace' in classList
                 climbCount = 1
@@ -27,7 +27,7 @@ class ConstantProvider extends AbstractProvider
                 if 'punctuation' in originalClassList
                     climbCount = 2
 
-                return true if 'constant' in @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
+                return true if 'constant' in @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
 
         return false
 
@@ -35,14 +35,14 @@ class ConstantProvider extends AbstractProvider
      * @inheritdoc
     ###
     getRangeForBufferPosition: (editor, bufferPosition) ->
-        classList = @getClassListForBufferPosition(editor, bufferPosition)
+        classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
         originalClassList = classList
 
         if 'punctuation' in classList
-            classList = @getClassListForBufferPosition(editor, bufferPosition, 2)
+            classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition, 2)
 
-        range = @getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 0)
+        range = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 0)
 
         if 'constant' in classList
             prefixRange = new Range(
@@ -56,10 +56,10 @@ class ConstantProvider extends AbstractProvider
             prefixText = editor.getTextInBufferRange(prefixRange)
 
             if prefixText.endsWith("\\")
-                prefixClassList = @getClassListForBufferPosition(editor, prefixRange.start)
+                prefixClassList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, prefixRange.start)
 
                 if "namespace" in prefixClassList
-                    namespaceRange = @getBufferRangeForClassListAtPosition(editor, prefixClassList, prefixRange.start, 0)
+                    namespaceRange = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, prefixClassList, prefixRange.start, 0)
 
                 else
                     namespaceRange = range
@@ -73,11 +73,11 @@ class ConstantProvider extends AbstractProvider
             if 'punctuation' in originalClassList
                 climbCount = 2
 
-            suffixClassList = @getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
+            suffixClassList = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition, climbCount)
 
             # Expand the range to include the constant name, if present.
             if 'constant' in suffixClassList
-                constantRange = @getBufferRangeForClassListAtPosition(editor, suffixClassList, new Point(range.end.row, range.end.column + 1))
+                constantRange = @scopeDescriptorHelper.getBufferRangeForClassListAtPosition(editor, suffixClassList, new Point(range.end.row, range.end.column + 1))
 
                 range = range.union(constantRange)
 
