@@ -151,7 +151,7 @@ class ScopeDescriptorHelper
      *
      * @return {Range|null}
     ###
-    getBufferRangeForClassListAtPosition: (editor, classList, bufferPosition, climbCount) ->
+    getBufferRangeForClassListAtPosition: (editor, classList, bufferPosition, climbCount = 1) ->
         start = @getStartOfClassListAtPosition(editor, classList, bufferPosition, climbCount)
         end = @getEndOfClassListAtPosition(editor, classList, bufferPosition, climbCount)
 
