@@ -1,11 +1,11 @@
 {Point} = require 'atom'
 
-AbstractProvider = require '../lib/AbstractProvider'
+ScopeDescriptorHelper = require '../lib/ScopeDescriptorHelper'
 
-describe "AbstractProvider", ->
+describe "ScopeDescriptorHelper", ->
     editor = null
     grammar = null
-    provider = new AbstractProvider()
+    helper = new ScopeDescriptorHelper()
 
     beforeEach ->
         waitsForPromise ->
@@ -43,7 +43,7 @@ describe "AbstractProvider", ->
         for i in [startColumn .. endColumn]
             bufferPosition = new Point(2, i)
 
-            range = provider.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 1)
+            range = helper.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 1)
 
             expect(range).toBeTruthy()
 
@@ -74,7 +74,7 @@ describe "AbstractProvider", ->
         for i in [startColumn .. endColumn]
             bufferPosition = new Point(2, i)
 
-            range = provider.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 0)
+            range = helper.getBufferRangeForClassListAtPosition(editor, classList, bufferPosition, 0)
 
             expect(range).toBeTruthy()
 

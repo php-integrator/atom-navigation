@@ -1,11 +1,12 @@
 {Point} = require 'atom'
 
 ClassConstantProvider = require '../lib/ClassConstantProvider'
+ScopeDescriptorHelper = require '../lib/ScopeDescriptorHelper'
 
 describe "ClassConstantProvider", ->
     editor = null
     grammar = null
-    provider = new ClassConstantProvider()
+    provider = new ClassConstantProvider(new ScopeDescriptorHelper())
 
     beforeEach ->
         waitsForPromise ->

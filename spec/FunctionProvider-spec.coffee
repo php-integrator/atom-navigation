@@ -1,11 +1,12 @@
 {Point} = require 'atom'
 
 FunctionProvider = require '../lib/FunctionProvider'
+ScopeDescriptorHelper = require '../lib/ScopeDescriptorHelper'
 
 describe "FunctionProvider", ->
     editor = null
     grammar = null
-    provider = new FunctionProvider()
+    provider = new FunctionProvider(new ScopeDescriptorHelper())
 
     beforeEach ->
         waitsForPromise ->
