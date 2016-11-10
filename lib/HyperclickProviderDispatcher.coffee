@@ -22,10 +22,23 @@ class HyperclickProviderDispatcher extends AbstractProvider
     service: null
 
     ###*
-     * Constructor.
+     * @var {Object}
     ###
-    constructor: () ->
+    cachingScopeDescriptorHelper: null
+
+    ###*
+     * @var {WeakMap}
+    ###
+    editorChangeSubscriptions: null
+
+    ###*
+     * Constructor.
+     *
+     * @param {Object} cachingScopeDescriptorHelper
+    ###
+    constructor: (@cachingScopeDescriptorHelper) ->
         @providers = []
+        @editorChangeSubscriptions = new WeakMap()
 
     ###*
      * @param {AbstractProvider} provider
@@ -52,6 +65,8 @@ class HyperclickProviderDispatcher extends AbstractProvider
         rangeToHighlight = null
         interestedProviderInfoList = []
 
+        @registerEditorListenersIfNeeded(editor)
+
         for provider in @providers
             if provider.canProvideForBufferPosition(editor, bufferPosition)
                 range = provider.getRangeForBufferPosition(editor, bufferPosition)
@@ -77,3 +92,19 @@ class HyperclickProviderDispatcher extends AbstractProvider
 
                     interestedProviderInfo.provider.handleNavigation(editor, interestedProviderInfo.range, text)
         }
+
+    ###*
+     * @param {TextEditor} editor
+    ###
+    registerEditorListenersIfNeeded: (editor) ->
+        if not @editorChangeSubscriptions.has(editor)
+            @registerEditorListeners(editor)
+
+    ###*
+     * @param {TextEditor} editor
+    ###
+    registerEditorListeners: (editor) ->
+        onChangeDisposable = editor.onDidStopChanging () =>
+            @cachingScopeDescriptorHelper.clearCache()
+
+        @editorChangeSubscriptions.set(editor, onChangeDisposable)

@@ -36,12 +36,12 @@ module.exports =
     ###
     getHyperclickProviderDispatcher: () ->
         if not @hyperclickProviderDispatcher
-            ScopeDescriptorHelper = require './ScopeDescriptorHelper'
+            CachingScopeDescriptorHelper = require './CachingScopeDescriptorHelper'
             HyperclickProviderDispatcher = require './HyperclickProviderDispatcher'
 
-            @hyperclickProviderDispatcher = new HyperclickProviderDispatcher()
+            cachingScopeDescriptorHelper = new CachingScopeDescriptorHelper()
 
-            scopeDescriptorHelper = new ScopeDescriptorHelper()
+            @hyperclickProviderDispatcher = new HyperclickProviderDispatcher(cachingScopeDescriptorHelper)
 
             ClassProvider         = require './ClassProvider'
             MethodProvider        = require './MethodProvider'
@@ -50,12 +50,12 @@ module.exports =
             ConstantProvider      = require './ConstantProvider'
             ClassConstantProvider = require './ClassConstantProvider'
 
-            @hyperclickProviderDispatcher.addProvider(new ClassProvider(scopeDescriptorHelper))
-            @hyperclickProviderDispatcher.addProvider(new MethodProvider(scopeDescriptorHelper))
-            @hyperclickProviderDispatcher.addProvider(new PropertyProvider(scopeDescriptorHelper))
-            @hyperclickProviderDispatcher.addProvider(new FunctionProvider(scopeDescriptorHelper))
-            @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider(scopeDescriptorHelper))
-            @hyperclickProviderDispatcher.addProvider(new ConstantProvider(scopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new ClassProvider(cachingScopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new MethodProvider(cachingScopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new PropertyProvider(cachingScopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new FunctionProvider(cachingScopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new ClassConstantProvider(cachingScopeDescriptorHelper))
+            @hyperclickProviderDispatcher.addProvider(new ConstantProvider(cachingScopeDescriptorHelper))
 
         return @hyperclickProviderDispatcher
 
