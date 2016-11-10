@@ -22,9 +22,10 @@ class FunctionProvider extends AbstractProvider
 
         return true if 'support' in classList and 'function' in classList
 
-        classListFollowingBufferPosition = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition)
+        if 'punctuation' in classList
+            classListFollowingBufferPosition = @scopeDescriptorHelper.getClassListFollowingBufferPosition(editor, bufferPosition)
 
-        return true if 'punctuation' in classList and 'support' in classListFollowingBufferPosition and 'function' in classListFollowingBufferPosition
+            return true if 'support' in classListFollowingBufferPosition and 'function' in classListFollowingBufferPosition
 
         return false
 
