@@ -215,7 +215,7 @@ class ClassProvider extends AbstractProvider
             className = term
 
             if doResolve
-                promise = @service.resolveTypeAt(editor, bufferPosition, className)
+                promise = @service.resolveTypeAt(editor, bufferPosition, className, 'classlike')
 
             else
                 promise = new Promise (resolve, reject) ->
