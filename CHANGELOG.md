@@ -1,4 +1,4 @@
-## 1.1.0 (base 1.3.0)
+## 1.1.0 (base 2.0.0)
 ### Features and enhancements
 * The dependency on SubAtom and jQuery has been removed.
 * Hyperclick is now used as back end, which allowed a lot of code to be replaced with a single, consistent, implementation.
