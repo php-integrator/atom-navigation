@@ -3,7 +3,7 @@
   "main": "./lib/Main",
   "version": "1.0.3",
   "description": "Provides code navigation and go to functionality for your PHP source code.",
-  "repository": "https://github.com/php-integrator/atom-navigation.git",
+  "repository": "php-integrator/atom-navigation",
   "license": "GPL-3.0",
   "engines": {
     "atom": ">=1.10.0 <2.0.0"
