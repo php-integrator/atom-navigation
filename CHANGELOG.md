@@ -1,3 +1,6 @@
+## 1.1.1
+* Fix deprecations.
+
 ## 1.1.0 (base 2.0.0)
 ### Features and enhancements
 * The dependency on SubAtom and jQuery has been removed.
