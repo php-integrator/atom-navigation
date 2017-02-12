@@ -23,6 +23,8 @@ class ClassProvider extends AbstractProvider
     canProvideForBufferPosition: (editor, bufferPosition) ->
         classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
+        return false if 'php' not in classList
+
         climbCount = 1
 
         if 'punctuation' in classList and 'inheritance' in classList

@@ -1,3 +1,6 @@
+## 1.1.2
+* Fix hyperclick providers triggering in other languages than PHP. (https://github.com/php-integrator/atom-navigation/issues/37)
+
 ## 1.1.1
 * Fix deprecations.
 

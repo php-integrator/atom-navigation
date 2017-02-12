@@ -14,6 +14,7 @@ class PropertyProvider extends AbstractProvider
     canProvideForBufferPosition: (editor, bufferPosition) ->
         classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
+        return false if 'php' not in classList
         return true if 'property' in classList
 
         # Ensure the dollar sign is also seen as a match

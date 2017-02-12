@@ -20,6 +20,8 @@ class FunctionProvider extends AbstractProvider
 
         classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
+        return false if 'php' not in classList
+
         return true if 'support' in classList and 'function' in classList
 
         if 'punctuation' in classList

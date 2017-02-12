@@ -14,6 +14,7 @@ class MethodProvider extends AbstractProvider
     canProvideForBufferPosition: (editor, bufferPosition) ->
         classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
+        return false if 'php' not in classList
         return true if 'function-call' in classList and ('object' in classList or 'static' in classList)
 
         return false

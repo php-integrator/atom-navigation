@@ -12,6 +12,7 @@ class ClassConstantProvider extends AbstractProvider
     canProvideForBufferPosition: (editor, bufferPosition) ->
         classList = @scopeDescriptorHelper.getClassListForBufferPosition(editor, bufferPosition)
 
+        return false if 'php' not in classList
         return true if 'other' in classList and 'class' in classList
 
         return false
