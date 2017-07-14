@@ -1,3 +1,6 @@
+## 1.2.0 (base 3.0.0)
+* Upgrade to base 3.0.0.
+
 ## 1.1.2
 * Fix hyperclick providers triggering in other languages than PHP. (https://github.com/php-integrator/atom-navigation/issues/37)
 
