@@ -1,3 +1,6 @@
+## 1.2.1
+* Attempt to fix apm not picking new release.
+
 ## 1.2.0 (base 3.0.0)
 * Upgrade to base 3.0.0.
 
