@@ -7,7 +7,7 @@
 ## Legacy
 This is a legacy version that requires PHP >= 7.1 and Atom <= 1.18. Users that are on more recent version of Atom can and should use the [the base package](https://github.com/php-integrator/atom-base) instead.
 
-This package depends on the syntax classes in Atom and they changed dramatically in Atom 1.19, effectively breaking most of this package. Instead, [the functionality of this package has been reimplemented in the core and base package](https://github.com/php-integrator/atom-navigation/issues/42#issuecomment-333316791].
+This package depends on the syntax classes in Atom and they changed dramatically in Atom 1.19, effectively breaking most of this package. Instead, [the functionality of this package has been reimplemented in the core and base package](https://github.com/php-integrator/atom-navigation/issues/42#issuecomment-333316791).
 
 ## About
 This package provides code navigation for your PHP source code using [PHP Integrator](https://github.com/php-integrator/atom-base).
