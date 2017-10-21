@@ -1,3 +1,7 @@
+## 1.2.2
+* Require Atom <= 1.18
+  * We're dependent on the syntax classes in Atom and they changed dramatically in Atom 1.19, effectively breaking most of this package. Instead, [the functionality of this package will be reimplemented in the core and base package](https://github.com/php-integrator/atom-navigation/issues/42#issuecomment-333316791).
+
 ## 1.2.1
 * Attempt to fix apm not picking new release.
 
