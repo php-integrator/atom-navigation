@@ -1,9 +1,4 @@
 # php-integrator/atom-navigation
-<p align="right">
-:coffee:
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YKTNLZCRHMRTJ">Send me some coffee beans</a>
-</p>
-
 ## Legacy
 This is a legacy version that requires PHP >= 7.1 and Atom <= 1.18. Users that are on more recent version of Atom can and should use the [the base package](https://github.com/php-integrator/atom-base) instead.
 
